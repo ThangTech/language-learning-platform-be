@@ -1,0 +1,6 @@
+@LearningProgressService_HostAddress = http://localhost:5251
+
+GET {{LearningProgressService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

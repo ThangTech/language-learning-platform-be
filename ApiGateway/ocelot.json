@@ -1,6 +1,5 @@
 {
   "Routes": [
-    // ─── Identity Service ──────────────────────────────────────
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "http",
@@ -39,7 +38,6 @@
       }
     },
 
-    // ─── Vocabulary Service ────────────────────────────────────
     {
       "DownstreamPathTemplate": "/api/words/{everything}",
       "DownstreamScheme": "http",
@@ -71,7 +69,6 @@
       }
     },
 
-    // ─── Quiz Service ──────────────────────────────────────────
     {
       "DownstreamPathTemplate": "/api/quizzes/{everything}",
       "DownstreamScheme": "http",
@@ -83,7 +80,6 @@
       }
     },
 
-    // ─── Learning Progress Service ─────────────────────────────
     {
       "DownstreamPathTemplate": "/api/stats/{everything}",
       "DownstreamScheme": "http",
@@ -123,9 +119,8 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
-    },
+    }, 
 
-    // ─── Grammar Service ───────────────────────────────────────
     {
       "DownstreamPathTemplate": "/api/grammar/{everything}",
       "DownstreamScheme": "http",
@@ -147,7 +142,6 @@
       }
     },
 
-    // ─── Notification Service ──────────────────────────────────
     {
       "DownstreamPathTemplate": "/api/notifications/{everything}",
       "DownstreamScheme": "http",
