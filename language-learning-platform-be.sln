@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrammarService", "Services\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "Services\NotificationService\NotificationService.csproj", "{7D9689A4-C880-497B-B0DD-94FA0D75A612}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListeningService", "Services\ListeningService\ListeningService.csproj", "{32139CDB-E1EA-E965-150B-877F7B138F00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,18 @@ Global
 		{7D9689A4-C880-497B-B0DD-94FA0D75A612}.Release|x64.Build.0 = Release|Any CPU
 		{7D9689A4-C880-497B-B0DD-94FA0D75A612}.Release|x86.ActiveCfg = Release|Any CPU
 		{7D9689A4-C880-497B-B0DD-94FA0D75A612}.Release|x86.Build.0 = Release|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Debug|x64.Build.0 = Debug|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Debug|x86.Build.0 = Debug|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Release|x64.ActiveCfg = Release|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Release|x64.Build.0 = Release|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Release|x86.ActiveCfg = Release|Any CPU
+		{32139CDB-E1EA-E965-150B-877F7B138F00}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +155,7 @@ Global
 		{053EE97D-D6DD-41C0-8BDC-6E7E1E2C03B3} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
 		{0AFBF3D4-325C-4260-B7D8-07A366D5FE7A} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
 		{7D9689A4-C880-497B-B0DD-94FA0D75A612} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
+		{32139CDB-E1EA-E965-150B-877F7B138F00} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16FAFB17-2907-4AB8-BD5D-3FB00FCFCEAC}
