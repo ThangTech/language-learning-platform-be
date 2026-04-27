@@ -1,0 +1,6 @@
+@ListeningService_HostAddress = http://localhost:5270
+
+GET {{ListeningService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
