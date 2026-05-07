@@ -1,7 +1,0 @@
-namespace IdentityService.Enums;
-
-public enum UserRole
-{
-    User = 1,
-    Admin = 2
-}
