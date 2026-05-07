@@ -6,7 +6,7 @@ namespace LanguagePlatform.API.Controllers;
 [Route("api/[controller]")]
 public class HealthController : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("/")]
     public IActionResult Get()
     {
         return Ok(new
