@@ -9,6 +9,7 @@ public class Flashcard : BaseEntity
     public bool IsLearned { get; set; } = false;
     public int ReviewCount { get; set; } = 0;
     public DateTime? NextReviewAt { get; set; }
+    public DateTime? LearnedAt { get; set; }
 
     // Navigation
     public User User { get; set; } = null!;
