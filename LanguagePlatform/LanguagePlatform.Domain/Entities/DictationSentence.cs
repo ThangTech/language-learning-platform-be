@@ -6,9 +6,7 @@ public class DictationSentence : BaseEntity
 {
     public Guid DictationSetId { get; set; }
     public string Sentence { get; set; } = string.Empty;
-    public string AudioTitle { get; set; } = string.Empty;
-    public string? Hint { get; set; }
-    public int Duration { get; set; } // seconds
+    public string? AudioUrl { get; set; }
     public int OrderIndex { get; set; }
 
     // Navigation

@@ -27,7 +27,6 @@ public class VocabularyService : IVocabularyService
         _mapper = mapper;
     }
 
-    // ── Words ────────────────────────────────────────────────────────────────
     public async Task<ApiResponse<PagedResult<WordDto>>> GetWordsAsync(
         int page, int pageSize, string? level = null, string? search = null)
     {
@@ -75,12 +74,11 @@ public class VocabularyService : IVocabularyService
     {
         var word = await _wordRepo.GetByIdAsync(id);
         if (word == null) return ApiResponse<bool>.Fail("Không tìm thấy từ vựng.");
-        _wordRepo.Remove(word);
+        _wordRepo.Delete(word);
         await _wordRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa từ vựng.");
     }
 
-    // ── Favorites ────────────────────────────────────────────────────────────
     public async Task<ApiResponse<IEnumerable<WordDto>>> GetFavoritesAsync(Guid userId)
     {
         var favorites = await _favoriteRepo.GetByUserIdAsync(userId);
@@ -92,7 +90,6 @@ public class VocabularyService : IVocabularyService
     {
         var exists = await _favoriteRepo.GetByUserAndWordAsync(userId, wordId);
         if (exists != null) return ApiResponse<bool>.Fail("Từ này đã có trong danh sách yêu thích.");
-
         await _favoriteRepo.AddAsync(new Favorite { UserId = userId, WordId = wordId });
         await _favoriteRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã thêm vào yêu thích.");
@@ -102,12 +99,11 @@ public class VocabularyService : IVocabularyService
     {
         var fav = await _favoriteRepo.GetByUserAndWordAsync(userId, wordId);
         if (fav == null) return ApiResponse<bool>.Fail("Không tìm thấy.");
-        _favoriteRepo.Remove(fav);
+        _favoriteRepo.Delete(fav);
         await _favoriteRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa khỏi yêu thích.");
     }
 
-    // ── Flashcards ───────────────────────────────────────────────────────────
     public async Task<ApiResponse<IEnumerable<FlashcardDto>>> GetFlashcardsAsync(Guid userId)
     {
         var cards = await _flashcardRepo.GetByUserIdAsync(userId);
@@ -118,7 +114,6 @@ public class VocabularyService : IVocabularyService
     {
         var exists = await _flashcardRepo.GetByUserAndWordAsync(userId, wordId);
         if (exists != null) return ApiResponse<FlashcardDto>.Fail("Từ này đã có trong flashcard.");
-
         var card = new Flashcard { UserId = userId, WordId = wordId };
         await _flashcardRepo.AddAsync(card);
         await _flashcardRepo.SaveChangesAsync();
@@ -140,7 +135,7 @@ public class VocabularyService : IVocabularyService
     {
         var card = await _flashcardRepo.GetByUserAndWordAsync(userId, wordId);
         if (card == null) return ApiResponse<bool>.Fail("Không tìm thấy flashcard.");
-        _flashcardRepo.Remove(card);
+        _flashcardRepo.Delete(card);
         await _flashcardRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa flashcard.");
     }

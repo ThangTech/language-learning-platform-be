@@ -11,17 +11,10 @@ public class NotificationService : INotificationService
     private readonly INotificationRepository _notifRepo;
     private readonly IMapper _mapper;
 
-    public NotificationService(INotificationRepository notifRepo, IMapper mapper)
-    {
-        _notifRepo = notifRepo;
-        _mapper = mapper;
-    }
+    public NotificationService(INotificationRepository notifRepo, IMapper mapper) { _notifRepo = notifRepo; _mapper = mapper; }
 
     public async Task<ApiResponse<IEnumerable<NotificationDto>>> GetUserNotificationsAsync(Guid userId)
-    {
-        var notifs = await _notifRepo.GetByUserIdAsync(userId);
-        return ApiResponse<IEnumerable<NotificationDto>>.Ok(_mapper.Map<List<NotificationDto>>(notifs));
-    }
+        => ApiResponse<IEnumerable<NotificationDto>>.Ok(_mapper.Map<List<NotificationDto>>(await _notifRepo.GetByUserIdAsync(userId)));
 
     public async Task<ApiResponse<NotificationDto>> CreateNotificationAsync(CreateNotificationRequest request)
     {
@@ -34,8 +27,7 @@ public class NotificationService : INotificationService
     public async Task<ApiResponse<bool>> MarkAsReadAsync(Guid userId, Guid notificationId)
     {
         var notif = await _notifRepo.GetByIdAsync(notificationId);
-        if (notif == null || notif.UserId != userId)
-            return ApiResponse<bool>.Fail("Không tìm thấy thông báo.");
+        if (notif == null || notif.UserId != userId) return ApiResponse<bool>.Fail("Không tìm thấy thông báo.");
         notif.IsRead = true;
         _notifRepo.Update(notif);
         await _notifRepo.SaveChangesAsync();
@@ -51,9 +43,8 @@ public class NotificationService : INotificationService
     public async Task<ApiResponse<bool>> DeleteNotificationAsync(Guid userId, Guid notificationId)
     {
         var notif = await _notifRepo.GetByIdAsync(notificationId);
-        if (notif == null || notif.UserId != userId)
-            return ApiResponse<bool>.Fail("Không tìm thấy thông báo.");
-        _notifRepo.Remove(notif);
+        if (notif == null || notif.UserId != userId) return ApiResponse<bool>.Fail("Không tìm thấy thông báo.");
+        _notifRepo.Delete(notif);
         await _notifRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa thông báo.");
     }

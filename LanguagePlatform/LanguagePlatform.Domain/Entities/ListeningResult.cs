@@ -12,5 +12,6 @@ public class ListeningResult : BaseEntity
     public DateTime CompletedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation
+    public User User { get; set; } = null!;
     public ListeningLesson Lesson { get; set; } = null!;
 }

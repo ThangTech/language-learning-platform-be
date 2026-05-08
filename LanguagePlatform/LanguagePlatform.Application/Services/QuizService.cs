@@ -13,17 +13,10 @@ public class QuizService : IQuizService
     private readonly IQuizRepository _quizRepo;
     private readonly IMapper _mapper;
 
-    public QuizService(IQuizRepository quizRepo, IMapper mapper)
-    {
-        _quizRepo = quizRepo;
-        _mapper = mapper;
-    }
+    public QuizService(IQuizRepository quizRepo, IMapper mapper) { _quizRepo = quizRepo; _mapper = mapper; }
 
     public async Task<ApiResponse<IEnumerable<QuizDto>>> GetQuizzesAsync()
-    {
-        var quizzes = await _quizRepo.GetAllAsync();
-        return ApiResponse<IEnumerable<QuizDto>>.Ok(_mapper.Map<List<QuizDto>>(quizzes));
-    }
+        => ApiResponse<IEnumerable<QuizDto>>.Ok(_mapper.Map<List<QuizDto>>(await _quizRepo.GetAllAsync()));
 
     public async Task<ApiResponse<QuizDto>> GetQuizByIdAsync(Guid id)
     {
@@ -33,10 +26,7 @@ public class QuizService : IQuizService
     }
 
     public async Task<ApiResponse<IEnumerable<QuizDto>>> GetQuizzesByLessonAsync(Guid lessonId)
-    {
-        var quizzes = await _quizRepo.GetByLessonAsync(lessonId);
-        return ApiResponse<IEnumerable<QuizDto>>.Ok(_mapper.Map<List<QuizDto>>(quizzes));
-    }
+        => ApiResponse<IEnumerable<QuizDto>>.Ok(_mapper.Map<List<QuizDto>>(await _quizRepo.GetByLessonAsync(lessonId)));
 
     public async Task<ApiResponse<QuizDto>> CreateQuizAsync(CreateQuizRequest request)
     {
@@ -73,7 +63,7 @@ public class QuizService : IQuizService
     {
         var quiz = await _quizRepo.GetByIdAsync(id);
         if (quiz == null) return ApiResponse<bool>.Fail("Không tìm thấy quiz.");
-        _quizRepo.Remove(quiz);
+        _quizRepo.Delete(quiz);
         await _quizRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa quiz.");
     }
@@ -91,25 +81,11 @@ public class QuizService : IQuizService
             if (question == null) continue;
             var isCorrect = string.Equals(answer.Answer, question.CorrectAnswer, StringComparison.OrdinalIgnoreCase);
             if (isCorrect) correct++;
-            details.Add(new QuizAnswerResultDto
-            {
-                QuestionId = answer.QuestionId,
-                IsCorrect = isCorrect,
-                CorrectAnswer = question.CorrectAnswer,
-                Explanation = question.Explanation
-            });
+            details.Add(new QuizAnswerResultDto { QuestionId = answer.QuestionId, IsCorrect = isCorrect, CorrectAnswer = question.CorrectAnswer, Explanation = question.Explanation });
         }
 
         var total = quiz.Questions.Count;
         var score = total > 0 ? (int)Math.Round((double)correct / total * 100) : 0;
-
-        return ApiResponse<QuizResultDto>.Ok(new QuizResultDto
-        {
-            QuizId = quiz.Id,
-            Score = score,
-            CorrectAnswers = correct,
-            TotalQuestions = total,
-            Answers = details
-        }, "Nộp bài thành công.");
+        return ApiResponse<QuizResultDto>.Ok(new QuizResultDto { QuizId = quiz.Id, Score = score, CorrectAnswers = correct, TotalQuestions = total, Answers = details }, "Nộp bài thành công.");
     }
 }

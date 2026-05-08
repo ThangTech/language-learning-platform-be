@@ -1,5 +1,4 @@
 using LanguagePlatform.Domain.Entities;
-using LanguagePlatform.Domain.Enums;
 using LanguagePlatform.Domain.Interfaces;
 using LanguagePlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

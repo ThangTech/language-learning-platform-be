@@ -17,6 +17,7 @@ public class LeaderboardEntryDto
 {
     public Guid UserId { get; set; }
     public string FullName { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
     public int TotalScore { get; set; }
     public int CurrentStreak { get; set; }
     public int Rank { get; set; }

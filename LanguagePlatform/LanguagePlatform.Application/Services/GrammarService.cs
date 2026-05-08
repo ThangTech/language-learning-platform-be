@@ -68,7 +68,7 @@ public class GrammarService : IGrammarService
     {
         var topic = await _grammarRepo.GetByIdAsync(id);
         if (topic == null) return ApiResponse<bool>.Fail("Không tìm thấy chủ đề.");
-        _grammarRepo.Remove(topic);
+        _grammarRepo.Delete(topic);
         await _grammarRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa chủ đề.");
     }

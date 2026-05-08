@@ -11,5 +11,6 @@ public interface IFavoriteRepository : IGenericRepository<Favorite>
 public interface IFlashcardRepository : IGenericRepository<Flashcard>
 {
     Task<IEnumerable<Flashcard>> GetByUserIdAsync(Guid userId);
-    Task<IEnumerable<Flashcard>> GetDueForReviewAsync(Guid userId);
+    Task<Flashcard?> GetByUserAndWordAsync(Guid userId, Guid wordId);
+    Task<IEnumerable<Flashcard>> GetUnlearnedAsync(Guid userId);
 }

@@ -7,14 +7,11 @@ public class QuizQuestion : BaseEntity
 {
     public Guid QuizId { get; set; }
     public string QuestionText { get; set; } = string.Empty;
-    public QuestionType QuestionType { get; set; } = QuestionType.MultipleChoice;
-    /// <summary>JSON array of options for MultipleChoice questions.</summary>
-    public string? OptionsJson { get; set; }
-    /// <summary>Sentence with blank for FillInBlank type.</summary>
-    public string? BlankText { get; set; }
-    /// <summary>Expected answer for FillInBlank / Dictation types.</summary>
-    public string? ExpectedAnswer { get; set; }
-    public int OrderIndex { get; set; }
+    public QuestionType Type { get; set; } = QuestionType.MultipleChoice;
+    public List<string> Options { get; set; } = new();
+    public string CorrectAnswer { get; set; } = string.Empty;
+    public string? Explanation { get; set; }
+    public string? AudioUrl { get; set; }
 
     // Navigation
     public Quiz Quiz { get; set; } = null!;

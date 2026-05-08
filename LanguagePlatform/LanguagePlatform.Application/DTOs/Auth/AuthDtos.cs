@@ -15,7 +15,18 @@ public class RegisterRequest
 
 public class AuthResponse
 {
-    public string AccessToken { get; set; } = string.Empty;
-    public string TokenType { get; set; } = "Bearer";
+    public string Token { get; set; } = string.Empty;
     public UserDto User { get; set; } = null!;
+}
+
+public class UpdateProfileRequest
+{
+    public string FullName { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
+}
+
+public class ChangePasswordRequest
+{
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
 }

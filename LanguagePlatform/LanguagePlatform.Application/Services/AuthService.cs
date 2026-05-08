@@ -55,7 +55,6 @@ public class AuthService : IAuthService
         await _userRepo.AddAsync(user);
         await _userRepo.SaveChangesAsync();
 
-        // Create initial progress record
         var token = _jwt.GenerateToken(user);
         return ApiResponse<AuthResponse>.Ok(new AuthResponse
         {

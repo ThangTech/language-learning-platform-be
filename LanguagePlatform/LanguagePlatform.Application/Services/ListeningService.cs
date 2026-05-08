@@ -14,11 +14,7 @@ public class ListeningService : IListeningService
     private readonly IDictationSetRepository _dictationRepo;
     private readonly IMapper _mapper;
 
-    public ListeningService(
-        IListeningRepository lessonRepo,
-        IListeningResultRepository resultRepo,
-        IDictationSetRepository dictationRepo,
-        IMapper mapper)
+    public ListeningService(IListeningRepository lessonRepo, IListeningResultRepository resultRepo, IDictationSetRepository dictationRepo, IMapper mapper)
     {
         _lessonRepo = lessonRepo;
         _resultRepo = resultRepo;
@@ -26,17 +22,10 @@ public class ListeningService : IListeningService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<ListeningLessonDto>>> GetLessonsAsync(
-        int page, int pageSize, string? level = null, string? search = null)
+    public async Task<ApiResponse<PagedResult<ListeningLessonDto>>> GetLessonsAsync(int page, int pageSize, string? level = null, string? search = null)
     {
         var (items, total) = await _lessonRepo.GetLessonsPagedAsync(page, pageSize, level, search);
-        return ApiResponse<PagedResult<ListeningLessonDto>>.Ok(new PagedResult<ListeningLessonDto>
-        {
-            Items = _mapper.Map<List<ListeningLessonDto>>(items),
-            TotalCount = total,
-            Page = page,
-            PageSize = pageSize
-        });
+        return ApiResponse<PagedResult<ListeningLessonDto>>.Ok(new PagedResult<ListeningLessonDto> { Items = _mapper.Map<List<ListeningLessonDto>>(items), TotalCount = total, Page = page, PageSize = pageSize });
     }
 
     public async Task<ApiResponse<ListeningLessonDto>> GetLessonByIdAsync(Guid id)
@@ -69,20 +58,14 @@ public class ListeningService : IListeningService
     {
         var lesson = await _lessonRepo.GetByIdAsync(id);
         if (lesson == null) return ApiResponse<bool>.Fail("Không tìm thấy bài nghe.");
-        _lessonRepo.Remove(lesson);
+        _lessonRepo.Delete(lesson);
         await _lessonRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa bài nghe.");
     }
 
     public async Task<ApiResponse<ListeningResultDto>> SubmitResultAsync(Guid userId, SubmitListeningResultRequest request)
     {
-        var result = new ListeningResult
-        {
-            UserId = userId,
-            LessonId = request.LessonId,
-            Score = request.Score,
-            CompletedAt = DateTime.UtcNow
-        };
+        var result = new ListeningResult { UserId = userId, LessonId = request.LessonId, Score = request.Score, CompletedAt = DateTime.UtcNow };
         await _resultRepo.AddAsync(result);
         await _resultRepo.SaveChangesAsync();
         return ApiResponse<ListeningResultDto>.Ok(_mapper.Map<ListeningResultDto>(result), "Đã lưu kết quả.");
@@ -109,17 +92,7 @@ public class ListeningService : IListeningService
 
     public async Task<ApiResponse<DictationSetDto>> CreateDictationSetAsync(CreateDictationSetRequest request)
     {
-        var set = new DictationSet
-        {
-            Title = request.Title,
-            Level = request.Level,
-            Sentences = request.Sentences.Select(s => new DictationSentence
-            {
-                Sentence = s.Sentence,
-                AudioUrl = s.AudioUrl,
-                OrderIndex = s.OrderIndex
-            }).ToList()
-        };
+        var set = new DictationSet { Title = request.Title, Level = request.Level, Sentences = request.Sentences.Select(s => new DictationSentence { Sentence = s.Sentence, AudioUrl = s.AudioUrl, OrderIndex = s.OrderIndex }).ToList() };
         await _dictationRepo.AddAsync(set);
         await _dictationRepo.SaveChangesAsync();
         return ApiResponse<DictationSetDto>.Ok(_mapper.Map<DictationSetDto>(set), "Đã tạo bộ chính tả.");

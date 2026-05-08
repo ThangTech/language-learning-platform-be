@@ -63,7 +63,7 @@ public class UserAdminService : IUserAdminService
     {
         var user = await _userRepo.GetByIdAsync(id);
         if (user == null) return ApiResponse<bool>.Fail("Không tìm thấy người dùng.");
-        _userRepo.Remove(user);
+        _userRepo.Delete(user);
         await _userRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa người dùng.");
     }
