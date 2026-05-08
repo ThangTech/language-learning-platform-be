@@ -5,7 +5,7 @@ namespace LanguagePlatform.Domain.Interfaces;
 
 public interface IGrammarRepository : IGenericRepository<GrammarTopic>
 {
-    Task<(IEnumerable<GrammarTopic> Items, int TotalCount)> GetTopicsPagedAsync(int page, int size, GrammarLevel? level = null);
+    Task<(IEnumerable<GrammarTopic> Items, int TotalCount)> GetTopicsPagedAsync(int page, int pageSize, GrammarLevel? level = null, string? search = null);
 }
 
 public interface IUserGrammarRepository : IGenericRepository<UserGrammar>

@@ -10,6 +10,7 @@ public class User : AuditableEntity
     public string FullName { get; set; } = string.Empty;
     public UserRole Role { get; set; } = UserRole.User;
     public UserStatus Status { get; set; } = UserStatus.Active;
+    public string? AvatarUrl { get; set; }
 
     // Navigation
     public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();

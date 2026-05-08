@@ -4,14 +4,13 @@ namespace LanguagePlatform.Domain.Interfaces;
 
 public interface IListeningRepository : IGenericRepository<ListeningLesson>
 {
-    Task<(IEnumerable<ListeningLesson> Items, int TotalCount)> GetLessonsPagedAsync(int page, int size, string? level = null, string? topic = null);
-    Task<ListeningLesson?> GetWithQuizzesAsync(Guid id);
+    Task<(IEnumerable<ListeningLesson> Items, int TotalCount)> GetLessonsPagedAsync(int page, int pageSize, string? level = null, string? search = null);
 }
 
-public interface IDictationRepository : IGenericRepository<DictationSet>
+public interface IDictationSetRepository : IGenericRepository<DictationSet>
 {
     Task<DictationSet?> GetWithSentencesAsync(Guid id);
-    Task<IEnumerable<DictationSet>> GetByLessonAsync(Guid lessonId);
+    Task<IEnumerable<DictationSet>> GetAllWithSentencesAsync();
 }
 
 public interface IListeningResultRepository : IGenericRepository<ListeningResult>
