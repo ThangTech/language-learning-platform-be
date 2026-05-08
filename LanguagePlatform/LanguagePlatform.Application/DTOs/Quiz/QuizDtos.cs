@@ -12,10 +12,11 @@ public class QuizQuestionDto
 {
     public Guid Id { get; set; }
     public string QuestionText { get; set; } = string.Empty;
-    public string QuestionType { get; set; } = string.Empty;
-    public string? OptionsJson { get; set; }
-    public string? BlankText { get; set; }
-    public int OrderIndex { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public List<string> Options { get; set; } = new();
+    public string CorrectAnswer { get; set; } = string.Empty;
+    public string? Explanation { get; set; }
+    public string? AudioUrl { get; set; }
 }
 
 public class CreateQuizRequest
@@ -28,11 +29,16 @@ public class CreateQuizRequest
 public class CreateQuizQuestionRequest
 {
     public string QuestionText { get; set; } = string.Empty;
-    public string QuestionType { get; set; } = "MultipleChoice";
-    public string? OptionsJson { get; set; }
-    public string? BlankText { get; set; }
-    public string? ExpectedAnswer { get; set; }
-    public int OrderIndex { get; set; }
+    public string Type { get; set; } = "MultipleChoice";
+    public List<string> Options { get; set; } = new();
+    public string CorrectAnswer { get; set; } = string.Empty;
+    public string? Explanation { get; set; }
+    public string? AudioUrl { get; set; }
+}
+
+public class UpdateQuizRequest
+{
+    public string Title { get; set; } = string.Empty;
 }
 
 public class SubmitQuizRequest
@@ -53,13 +59,13 @@ public class QuizResultDto
     public int TotalQuestions { get; set; }
     public int CorrectAnswers { get; set; }
     public int Score { get; set; }
-    public List<QuizAnswerResultDto> AnswerResults { get; set; } = new();
+    public List<QuizAnswerResultDto> Answers { get; set; } = new();
 }
 
 public class QuizAnswerResultDto
 {
     public Guid QuestionId { get; set; }
-    public string UserAnswer { get; set; } = string.Empty;
-    public string CorrectAnswer { get; set; } = string.Empty;
     public bool IsCorrect { get; set; }
+    public string CorrectAnswer { get; set; } = string.Empty;
+    public string? Explanation { get; set; }
 }
