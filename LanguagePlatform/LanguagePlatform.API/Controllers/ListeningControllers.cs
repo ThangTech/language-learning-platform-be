@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using FluentValidation;
+using LanguagePlatform.API.Helpers;
 using LanguagePlatform.Application.DTOs.Listening;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,18 @@ namespace LanguagePlatform.API.Controllers;
 public class ListeningController : ControllerBase
 {
     private readonly IListeningService _listeningService;
-    public ListeningController(IListeningService listeningService) => _listeningService = listeningService;
+    private readonly IValidator<CreateListeningLessonRequest> _createLessonValidator;
+    private readonly IValidator<SubmitListeningResultRequest> _submitResultValidator;
+
+    public ListeningController(
+        IListeningService listeningService,
+        IValidator<CreateListeningLessonRequest> createLessonValidator,
+        IValidator<SubmitListeningResultRequest> submitResultValidator)
+    {
+        _listeningService = listeningService;
+        _createLessonValidator = createLessonValidator;
+        _submitResultValidator = submitResultValidator;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -26,7 +39,12 @@ public class ListeningController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateListeningLessonRequest request)
-        => Ok(await _listeningService.CreateLessonAsync(request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<CreateListeningLessonRequest, object>(_createLessonValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _listeningService.CreateLessonAsync(request));
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
@@ -41,7 +59,12 @@ public class ListeningController : ControllerBase
     [Authorize]
     [HttpPost("results")]
     public async Task<IActionResult> SubmitResult([FromBody] SubmitListeningResultRequest request)
-        => Ok(await _listeningService.SubmitResultAsync(GetUserId(), request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<SubmitListeningResultRequest, object>(_submitResultValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _listeningService.SubmitResultAsync(GetUserId(), request));
+    }
 
     [Authorize]
     [HttpGet("results/my")]

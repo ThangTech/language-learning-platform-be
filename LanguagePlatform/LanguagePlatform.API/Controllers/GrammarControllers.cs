@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using FluentValidation;
+using LanguagePlatform.API.Helpers;
 using LanguagePlatform.Application.DTOs.Grammar;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,18 @@ namespace LanguagePlatform.API.Controllers;
 public class GrammarController : ControllerBase
 {
     private readonly IGrammarService _grammarService;
-    public GrammarController(IGrammarService grammarService) => _grammarService = grammarService;
+    private readonly IValidator<CreateGrammarTopicRequest> _createValidator;
+    private readonly IValidator<UpdateGrammarTopicRequest> _updateValidator;
+
+    public GrammarController(
+        IGrammarService grammarService,
+        IValidator<CreateGrammarTopicRequest> createValidator,
+        IValidator<UpdateGrammarTopicRequest> updateValidator)
+    {
+        _grammarService = grammarService;
+        _createValidator = createValidator;
+        _updateValidator = updateValidator;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -26,12 +39,22 @@ public class GrammarController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGrammarTopicRequest request)
-        => Ok(await _grammarService.CreateTopicAsync(request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<CreateGrammarTopicRequest, object>(_createValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _grammarService.CreateTopicAsync(request));
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGrammarTopicRequest request)
-        => Ok(await _grammarService.UpdateTopicAsync(id, request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<UpdateGrammarTopicRequest, object>(_updateValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _grammarService.UpdateTopicAsync(id, request));
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]

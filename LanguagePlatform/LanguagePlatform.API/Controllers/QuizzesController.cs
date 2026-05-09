@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using FluentValidation;
+using LanguagePlatform.API.Helpers;
 using LanguagePlatform.Application.DTOs.Quiz;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,15 @@ namespace LanguagePlatform.API.Controllers;
 public class QuizzesController : ControllerBase
 {
     private readonly IQuizService _quizService;
-    public QuizzesController(IQuizService quizService) => _quizService = quizService;
+    private readonly IValidator<SubmitQuizRequest> _submitValidator;
+
+    public QuizzesController(
+        IQuizService quizService,
+        IValidator<SubmitQuizRequest> submitValidator)
+    {
+        _quizService = quizService;
+        _submitValidator = submitValidator;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -43,7 +53,12 @@ public class QuizzesController : ControllerBase
     [Authorize]
     [HttpPost("submit")]
     public async Task<IActionResult> Submit([FromBody] SubmitQuizRequest request)
-        => Ok(await _quizService.SubmitQuizAsync(GetUserId(), request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<SubmitQuizRequest, object>(_submitValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _quizService.SubmitQuizAsync(GetUserId(), request));
+    }
 
     private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 }

@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using FluentValidation;
+using LanguagePlatform.API.Helpers;
 using LanguagePlatform.Application.DTOs.Vocabulary;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,18 @@ namespace LanguagePlatform.API.Controllers;
 public class WordsController : ControllerBase
 {
     private readonly IVocabularyService _vocabService;
-    public WordsController(IVocabularyService vocabService) => _vocabService = vocabService;
+    private readonly IValidator<CreateWordRequest> _createValidator;
+    private readonly IValidator<UpdateWordRequest> _updateValidator;
+
+    public WordsController(
+        IVocabularyService vocabService,
+        IValidator<CreateWordRequest> createValidator,
+        IValidator<UpdateWordRequest> updateValidator)
+    {
+        _vocabService = vocabService;
+        _createValidator = createValidator;
+        _updateValidator = updateValidator;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -26,12 +39,22 @@ public class WordsController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateWordRequest request)
-        => Ok(await _vocabService.CreateWordAsync(request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<CreateWordRequest, object>(_createValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _vocabService.CreateWordAsync(request));
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWordRequest request)
-        => Ok(await _vocabService.UpdateWordAsync(id, request));
+    {
+        var invalid = await ValidationHelper.ValidateAsync<UpdateWordRequest, object>(_updateValidator, request);
+        if (invalid != null) return BadRequest(invalid);
+
+        return Ok(await _vocabService.UpdateWordAsync(id, request));
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
