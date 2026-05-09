@@ -5,48 +5,91 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LanguagePlatform.API.Controllers;
 
+// Controller trả về thống kê học tập của người dùng (số từ đã học, bài đã làm...)
 [ApiController]
 [Route("api/stats")]
 [Authorize]
 public class StatsController : ControllerBase
 {
     private readonly IProgressService _progressService;
-    public StatsController(IProgressService progressService) => _progressService = progressService;
 
+    public StatsController(IProgressService progressService)
+    {
+        _progressService = progressService;
+    }
+
+    // Lấy thống kê tổng quan: số từ đã học, số bài listening hoàn thành, v.v.
     [HttpGet]
     public async Task<IActionResult> GetStats()
-        => Ok(await _progressService.GetStatsAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _progressService.GetStatsAsync(userId);
+        return Ok(result);
+    }
 
-    private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    // Lấy ID của người dùng đang đăng nhập từ JWT token
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }
 
+// Controller quản lý chuỗi ngày học liên tiếp (streak)
 [ApiController]
 [Route("api/streaks")]
 [Authorize]
 public class StreaksController : ControllerBase
 {
     private readonly IProgressService _progressService;
-    public StreaksController(IProgressService progressService) => _progressService = progressService;
 
+    public StreaksController(IProgressService progressService)
+    {
+        _progressService = progressService;
+    }
+
+    // Lấy thông tin streak hiện tại (đã học bao nhiêu ngày liên tiếp)
     [HttpGet]
     public async Task<IActionResult> GetStreak()
-        => Ok(await _progressService.GetStreakAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _progressService.GetStreakAsync(userId);
+        return Ok(result);
+    }
 
+    // Cập nhật streak khi người dùng học xong trong ngày
     [HttpPost("update")]
     public async Task<IActionResult> UpdateStreak()
-        => Ok(await _progressService.UpdateStreakAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _progressService.UpdateStreakAsync(userId);
+        return Ok(result);
+    }
 
-    private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }
 
+// Controller bảng xếp hạng - ai học nhiều nhất
 [ApiController]
 [Route("api/leaderboard")]
 public class LeaderboardController : ControllerBase
 {
     private readonly IProgressService _progressService;
-    public LeaderboardController(IProgressService progressService) => _progressService = progressService;
 
+    public LeaderboardController(IProgressService progressService)
+    {
+        _progressService = progressService;
+    }
+
+    // Lấy top N người dùng có điểm cao nhất
     [HttpGet]
     public async Task<IActionResult> GetLeaderboard([FromQuery] int top = 10)
-        => Ok(await _progressService.GetLeaderboardAsync(top));
+    {
+        var result = await _progressService.GetLeaderboardAsync(top);
+        return Ok(result);
+    }
 }

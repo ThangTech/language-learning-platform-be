@@ -52,7 +52,8 @@ public class GrammarController : ControllerBase
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
         }
 
         var result = await _grammarService.CreateTopicAsync(request);
@@ -67,7 +68,8 @@ public class GrammarController : ControllerBase
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
         }
 
         var result = await _grammarService.UpdateTopicAsync(id, request);

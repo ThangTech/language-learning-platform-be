@@ -35,14 +35,19 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        // Kiểm tra dữ liệu đầu vào
+        // Bước 1: Kiểm tra dữ liệu đầu vào có hợp lệ không
         var validationResult = await _loginValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
+            // Lấy danh sách tất cả lỗi ra
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
+
+            // Trả về lỗi 400 kèm danh sách lỗi
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
         }
 
+        // Bước 2: Gọi service xử lý đăng nhập
         var result = await _authService.LoginAsync(request);
         return Ok(result);
     }
@@ -54,7 +59,8 @@ public class AuthController : ControllerBase
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
         }
 
         var result = await _authService.RegisterAsync(request);
@@ -78,7 +84,8 @@ public class AuthController : ControllerBase
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
         }
 
         Guid userId = GetUserId();
@@ -94,7 +101,8 @@ public class AuthController : ControllerBase
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
         }
 
         Guid userId = GetUserId();

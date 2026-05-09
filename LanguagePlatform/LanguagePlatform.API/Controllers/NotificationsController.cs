@@ -6,34 +6,68 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LanguagePlatform.API.Controllers;
 
+// Controller quản lý thông báo trong ứng dụng
 [ApiController]
 [Route("api/notifications")]
 [Authorize]
 public class NotificationsController : ControllerBase
 {
     private readonly INotificationService _notifService;
-    public NotificationsController(INotificationService notifService) => _notifService = notifService;
 
+    public NotificationsController(INotificationService notifService)
+    {
+        _notifService = notifService;
+    }
+
+    // Lấy tất cả thông báo của người dùng đang đăng nhập
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _notifService.GetUserNotificationsAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _notifService.GetUserNotificationsAsync(userId);
+        return Ok(result);
+    }
 
+    // Tạo thông báo mới - chỉ Admin được phép
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateNotificationRequest request)
-        => Ok(await _notifService.CreateNotificationAsync(request));
+    {
+        var result = await _notifService.CreateNotificationAsync(request);
+        return Ok(result);
+    }
 
+    // Đánh dấu một thông báo là đã đọc
     [HttpPut("{id:guid}/read")]
     public async Task<IActionResult> MarkRead(Guid id)
-        => Ok(await _notifService.MarkAsReadAsync(GetUserId(), id));
+    {
+        Guid userId = GetUserId();
+        var result = await _notifService.MarkAsReadAsync(userId, id);
+        return Ok(result);
+    }
 
+    // Đánh dấu tất cả thông báo là đã đọc
     [HttpPut("read-all")]
     public async Task<IActionResult> MarkAllRead()
-        => Ok(await _notifService.MarkAllAsReadAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _notifService.MarkAllAsReadAsync(userId);
+        return Ok(result);
+    }
 
+    // Xóa một thông báo
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
-        => Ok(await _notifService.DeleteNotificationAsync(GetUserId(), id));
+    {
+        Guid userId = GetUserId();
+        var result = await _notifService.DeleteNotificationAsync(userId, id);
+        return Ok(result);
+    }
 
-    private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    // Lấy ID của người dùng đang đăng nhập từ JWT token
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }
