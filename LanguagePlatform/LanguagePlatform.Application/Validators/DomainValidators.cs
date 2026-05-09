@@ -14,16 +14,16 @@ public class CreateGrammarTopicRequestValidator : AbstractValidator<CreateGramma
     public CreateGrammarTopicRequestValidator()
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(200).WithMessage("Title must not exceed 200 characters.");
+            .NotEmpty().WithMessage("Tiêu đề không được để trống.")
+            .MaximumLength(200).WithMessage("Tiêu đề không được vượt quá 200 ký tự.");
 
         RuleFor(x => x.Content)
-            .NotEmpty().WithMessage("Content is required.")
-            .MinimumLength(20).WithMessage("Content must be at least 20 characters.");
+            .NotEmpty().WithMessage("Nội dung không được để trống.")
+            .MinimumLength(20).WithMessage("Nội dung phải có ít nhất 20 ký tự.");
 
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Must(l => ValidLevels.Contains(l)).WithMessage("Level must be Beginner, Intermediate, or Advanced.");
+            .NotEmpty().WithMessage("Cấp độ không được để trống.")
+            .Must(l => ValidLevels.Contains(l)).WithMessage("Cấp độ phải là Beginner, Intermediate hoặc Advanced.");
     }
 }
 
@@ -34,16 +34,16 @@ public class UpdateGrammarTopicRequestValidator : AbstractValidator<UpdateGramma
     public UpdateGrammarTopicRequestValidator()
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(200).WithMessage("Title must not exceed 200 characters.");
+            .NotEmpty().WithMessage("Tiêu đề không được để trống.")
+            .MaximumLength(200).WithMessage("Tiêu đề không được vượt quá 200 ký tự.");
 
         RuleFor(x => x.Content)
-            .NotEmpty().WithMessage("Content is required.")
-            .MinimumLength(20).WithMessage("Content must be at least 20 characters.");
+            .NotEmpty().WithMessage("Nội dung không được để trống.")
+            .MinimumLength(20).WithMessage("Nội dung phải có ít nhất 20 ký tự.");
 
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Must(l => ValidLevels.Contains(l)).WithMessage("Level must be Beginner, Intermediate, or Advanced.");
+            .NotEmpty().WithMessage("Cấp độ không được để trống.")
+            .Must(l => ValidLevels.Contains(l)).WithMessage("Cấp độ phải là Beginner, Intermediate hoặc Advanced.");
     }
 }
 
@@ -56,20 +56,20 @@ public class CreateListeningLessonRequestValidator : AbstractValidator<CreateLis
     public CreateListeningLessonRequestValidator()
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(200).WithMessage("Title must not exceed 200 characters.");
+            .NotEmpty().WithMessage("Tiêu đề bài nghe không được để trống.")
+            .MaximumLength(200).WithMessage("Tiêu đề không được vượt quá 200 ký tự.");
 
         RuleFor(x => x.AudioUrl)
-            .NotEmpty().WithMessage("Audio URL is required.")
+            .NotEmpty().WithMessage("Đường dẫn audio không được để trống.")
             .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
-            .WithMessage("Audio URL must be a valid URL.");
+            .WithMessage("Đường dẫn audio không hợp lệ.");
 
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Must(l => ValidLevels.Contains(l)).WithMessage("Level must be Beginner, Intermediate, or Advanced.");
+            .NotEmpty().WithMessage("Cấp độ không được để trống.")
+            .Must(l => ValidLevels.Contains(l)).WithMessage("Cấp độ phải là Beginner, Intermediate hoặc Advanced.");
 
         RuleFor(x => x.Duration)
-            .GreaterThan(0).WithMessage("Duration must be greater than 0 seconds.");
+            .GreaterThan(0).WithMessage("Thời lượng phải lớn hơn 0 giây.");
     }
 }
 
@@ -78,10 +78,10 @@ public class SubmitListeningResultRequestValidator : AbstractValidator<SubmitLis
     public SubmitListeningResultRequestValidator()
     {
         RuleFor(x => x.LessonId)
-            .NotEmpty().WithMessage("Lesson ID is required.");
+            .NotEmpty().WithMessage("Mã bài nghe không được để trống.");
 
         RuleFor(x => x.Score)
-            .InclusiveBetween(0, 100).WithMessage("Score must be between 0 and 100.");
+            .InclusiveBetween(0, 100).WithMessage("Điểm số phải nằm trong khoảng từ 0 đến 100.");
     }
 }
 
@@ -92,18 +92,18 @@ public class SubmitQuizRequestValidator : AbstractValidator<SubmitQuizRequest>
     public SubmitQuizRequestValidator()
     {
         RuleFor(x => x.QuizId)
-            .NotEmpty().WithMessage("Quiz ID is required.");
+            .NotEmpty().WithMessage("Mã bài kiểm tra không được để trống.");
 
         RuleFor(x => x.Answers)
-            .NotEmpty().WithMessage("At least one answer is required.")
-            .Must(a => a.Count > 0).WithMessage("Answers list cannot be empty.");
+            .NotEmpty().WithMessage("Phải có ít nhất một câu trả lời.")
+            .Must(a => a.Count > 0).WithMessage("Danh sách câu trả lời không được rỗng.");
 
         RuleForEach(x => x.Answers).ChildRules(answer =>
         {
             answer.RuleFor(a => a.QuestionId)
-                .NotEmpty().WithMessage("Question ID is required.");
+                .NotEmpty().WithMessage("Mã câu hỏi không được để trống.");
             answer.RuleFor(a => a.Answer)
-                .NotEmpty().WithMessage("Answer is required.");
+                .NotEmpty().WithMessage("Câu trả lời không được để trống.");
         });
     }
 }

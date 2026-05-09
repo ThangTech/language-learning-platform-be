@@ -10,27 +10,27 @@ public class CreateWordRequestValidator : AbstractValidator<CreateWordRequest>
     public CreateWordRequestValidator()
     {
         RuleFor(x => x.Term)
-            .NotEmpty().WithMessage("Term is required.")
-            .MaximumLength(100).WithMessage("Term must not exceed 100 characters.");
+            .NotEmpty().WithMessage("Từ vựng không được để trống.")
+            .MaximumLength(100).WithMessage("Từ vựng không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.Definition)
-            .NotEmpty().WithMessage("Definition is required.")
-            .MaximumLength(500).WithMessage("Definition must not exceed 500 characters.");
+            .NotEmpty().WithMessage("Định nghĩa không được để trống.")
+            .MaximumLength(500).WithMessage("Định nghĩa không được vượt quá 500 ký tự.");
 
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Must(l => ValidLevels.Contains(l)).WithMessage("Level must be Beginner, Intermediate, or Advanced.");
+            .NotEmpty().WithMessage("Cấp độ không được để trống.")
+            .Must(l => ValidLevels.Contains(l)).WithMessage("Cấp độ phải là Beginner, Intermediate hoặc Advanced.");
 
         RuleFor(x => x.Topic)
-            .NotEmpty().WithMessage("Topic is required.")
-            .MaximumLength(100).WithMessage("Topic must not exceed 100 characters.");
+            .NotEmpty().WithMessage("Chủ đề không được để trống.")
+            .MaximumLength(100).WithMessage("Chủ đề không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.ExampleSentence)
-            .MaximumLength(500).WithMessage("Example sentence must not exceed 500 characters.")
+            .MaximumLength(500).WithMessage("Câu ví dụ không được vượt quá 500 ký tự.")
             .When(x => x.ExampleSentence != null);
 
         RuleFor(x => x.Pronunciation)
-            .MaximumLength(100).WithMessage("Pronunciation must not exceed 100 characters.")
+            .MaximumLength(100).WithMessage("Phiên âm không được vượt quá 100 ký tự.")
             .When(x => x.Pronunciation != null);
     }
 }
@@ -42,19 +42,19 @@ public class UpdateWordRequestValidator : AbstractValidator<UpdateWordRequest>
     public UpdateWordRequestValidator()
     {
         RuleFor(x => x.Term)
-            .NotEmpty().WithMessage("Term is required.")
-            .MaximumLength(100).WithMessage("Term must not exceed 100 characters.");
+            .NotEmpty().WithMessage("Từ vựng không được để trống.")
+            .MaximumLength(100).WithMessage("Từ vựng không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.Definition)
-            .NotEmpty().WithMessage("Definition is required.")
-            .MaximumLength(500).WithMessage("Definition must not exceed 500 characters.");
+            .NotEmpty().WithMessage("Định nghĩa không được để trống.")
+            .MaximumLength(500).WithMessage("Định nghĩa không được vượt quá 500 ký tự.");
 
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Must(l => ValidLevels.Contains(l)).WithMessage("Level must be Beginner, Intermediate, or Advanced.");
+            .NotEmpty().WithMessage("Cấp độ không được để trống.")
+            .Must(l => ValidLevels.Contains(l)).WithMessage("Cấp độ phải là Beginner, Intermediate hoặc Advanced.");
 
         RuleFor(x => x.Topic)
-            .NotEmpty().WithMessage("Topic is required.")
-            .MaximumLength(100).WithMessage("Topic must not exceed 100 characters.");
+            .NotEmpty().WithMessage("Chủ đề không được để trống.")
+            .MaximumLength(100).WithMessage("Chủ đề không được vượt quá 100 ký tự.");
     }
 }
