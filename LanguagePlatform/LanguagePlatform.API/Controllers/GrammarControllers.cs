@@ -48,11 +48,11 @@ public class GrammarController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGrammarTopicRequest request)
     {
-        var ketQua = await _createValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _createValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         var result = await _grammarService.CreateTopicAsync(request);
@@ -63,11 +63,11 @@ public class GrammarController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGrammarTopicRequest request)
     {
-        var ketQua = await _updateValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _updateValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         var result = await _grammarService.UpdateTopicAsync(id, request);

@@ -73,11 +73,11 @@ public class QuizzesController : ControllerBase
     public async Task<IActionResult> Submit([FromBody] SubmitQuizRequest request)
     {
         // Kiểm tra dữ liệu: phải có quiz ID và ít nhất 1 câu trả lời
-        var ketQua = await _submitValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _submitValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         Guid userId = GetUserId();

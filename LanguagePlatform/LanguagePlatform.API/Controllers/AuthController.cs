@@ -36,11 +36,11 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         // Kiểm tra dữ liệu đầu vào
-        var ketQua = await _loginValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _loginValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         var result = await _authService.LoginAsync(request);
@@ -50,11 +50,11 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var ketQua = await _registerValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _registerValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         var result = await _authService.RegisterAsync(request);
@@ -74,11 +74,11 @@ public class AuthController : ControllerBase
     [HttpPut("profile")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
-        var ketQua = await _updateProfileValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _updateProfileValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         Guid userId = GetUserId();
@@ -90,11 +90,11 @@ public class AuthController : ControllerBase
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        var ketQua = await _changePasswordValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _changePasswordValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         Guid userId = GetUserId();

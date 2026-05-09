@@ -48,11 +48,11 @@ public class ListeningController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateListeningLessonRequest request)
     {
-        var ketQua = await _createLessonValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _createLessonValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         var result = await _listeningService.CreateLessonAsync(request);
@@ -79,11 +79,11 @@ public class ListeningController : ControllerBase
     [HttpPost("results")]
     public async Task<IActionResult> SubmitResult([FromBody] SubmitListeningResultRequest request)
     {
-        var ketQua = await _submitResultValidator.ValidateAsync(request);
-        if (!ketQua.IsValid)
+        var validationResult = await _submitResultValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(errors[0], errors));
         }
 
         Guid userId = GetUserId();
