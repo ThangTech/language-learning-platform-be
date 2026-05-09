@@ -1,6 +1,8 @@
+using FluentValidation;
 using LanguagePlatform.Application.Interfaces;
 using LanguagePlatform.Application.Mappings;
 using LanguagePlatform.Application.Services;
+using LanguagePlatform.Application.Validators;
 using LanguagePlatform.Domain.Interfaces;
 using LanguagePlatform.Infrastructure.Persistence;
 using LanguagePlatform.Infrastructure.Repositories;
@@ -43,6 +45,9 @@ public static class DependencyInjection
     {
         // AutoMapper
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
+
+        // FluentValidation - scan all validators in Application assembly
+        services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
 
         // Application services
         services.AddScoped<IAuthService, AuthService>();
