@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using FluentValidation;
-using LanguagePlatform.API.Helpers;
+using LanguagePlatform.Application.DTOs.Common;
 using LanguagePlatform.Application.DTOs.Vocabulary;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -28,38 +28,59 @@ public class WordsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 20,
-        [FromQuery] string? level = null, [FromQuery] string? search = null)
-        => Ok(await _vocabService.GetWordsAsync(page, pageSize, level, search));
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? level = null,
+        [FromQuery] string? search = null)
+    {
+        var result = await _vocabService.GetWordsAsync(page, pageSize, level, search);
+        return Ok(result);
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
-        => Ok(await _vocabService.GetWordByIdAsync(id));
+    {
+        var result = await _vocabService.GetWordByIdAsync(id);
+        return Ok(result);
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateWordRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<CreateWordRequest, object>(_createValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _createValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _vocabService.CreateWordAsync(request));
+        var result = await _vocabService.CreateWordAsync(request);
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWordRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<UpdateWordRequest, object>(_updateValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _updateValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _vocabService.UpdateWordAsync(id, request));
+        var result = await _vocabService.UpdateWordAsync(id, request);
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
-        => Ok(await _vocabService.DeleteWordAsync(id));
+    {
+        var result = await _vocabService.DeleteWordAsync(id);
+        return Ok(result);
+    }
 }
 
 [ApiController]
@@ -68,21 +89,41 @@ public class WordsController : ControllerBase
 public class FavoritesController : ControllerBase
 {
     private readonly IVocabularyService _vocabService;
-    public FavoritesController(IVocabularyService vocabService) => _vocabService = vocabService;
+
+    public FavoritesController(IVocabularyService vocabService)
+    {
+        _vocabService = vocabService;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _vocabService.GetFavoritesAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.GetFavoritesAsync(userId);
+        return Ok(result);
+    }
 
     [HttpPost("{wordId:guid}")]
     public async Task<IActionResult> Add(Guid wordId)
-        => Ok(await _vocabService.AddFavoriteAsync(GetUserId(), wordId));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.AddFavoriteAsync(userId, wordId);
+        return Ok(result);
+    }
 
     [HttpDelete("{wordId:guid}")]
     public async Task<IActionResult> Remove(Guid wordId)
-        => Ok(await _vocabService.RemoveFavoriteAsync(GetUserId(), wordId));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.RemoveFavoriteAsync(userId, wordId);
+        return Ok(result);
+    }
 
-    private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }
 
 [ApiController]
@@ -91,23 +132,47 @@ public class FavoritesController : ControllerBase
 public class FlashcardsController : ControllerBase
 {
     private readonly IVocabularyService _vocabService;
-    public FlashcardsController(IVocabularyService vocabService) => _vocabService = vocabService;
+
+    public FlashcardsController(IVocabularyService vocabService)
+    {
+        _vocabService = vocabService;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _vocabService.GetFlashcardsAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.GetFlashcardsAsync(userId);
+        return Ok(result);
+    }
 
     [HttpPost("{wordId:guid}")]
     public async Task<IActionResult> Add(Guid wordId)
-        => Ok(await _vocabService.AddToFlashcardAsync(GetUserId(), wordId));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.AddToFlashcardAsync(userId, wordId);
+        return Ok(result);
+    }
 
     [HttpPut("{wordId:guid}/learned")]
     public async Task<IActionResult> MarkLearned(Guid wordId)
-        => Ok(await _vocabService.MarkFlashcardLearnedAsync(GetUserId(), wordId));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.MarkFlashcardLearnedAsync(userId, wordId);
+        return Ok(result);
+    }
 
     [HttpDelete("{wordId:guid}")]
     public async Task<IActionResult> Remove(Guid wordId)
-        => Ok(await _vocabService.RemoveFlashcardAsync(GetUserId(), wordId));
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.RemoveFlashcardAsync(userId, wordId);
+        return Ok(result);
+    }
 
-    private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }

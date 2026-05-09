@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using FluentValidation;
-using LanguagePlatform.API.Helpers;
+using LanguagePlatform.Application.DTOs.Common;
 using LanguagePlatform.Application.DTOs.Listening;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -28,50 +28,83 @@ public class ListeningController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 20,
-        [FromQuery] string? level = null, [FromQuery] string? search = null)
-        => Ok(await _listeningService.GetLessonsAsync(page, pageSize, level, search));
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? level = null,
+        [FromQuery] string? search = null)
+    {
+        var result = await _listeningService.GetLessonsAsync(page, pageSize, level, search);
+        return Ok(result);
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
-        => Ok(await _listeningService.GetLessonByIdAsync(id));
+    {
+        var result = await _listeningService.GetLessonByIdAsync(id);
+        return Ok(result);
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateListeningLessonRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<CreateListeningLessonRequest, object>(_createLessonValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _createLessonValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _listeningService.CreateLessonAsync(request));
+        var result = await _listeningService.CreateLessonAsync(request);
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateListeningLessonRequest request)
-        => Ok(await _listeningService.UpdateLessonAsync(id, request));
+    {
+        var result = await _listeningService.UpdateLessonAsync(id, request);
+        return Ok(result);
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
-        => Ok(await _listeningService.DeleteLessonAsync(id));
+    {
+        var result = await _listeningService.DeleteLessonAsync(id);
+        return Ok(result);
+    }
 
     [Authorize]
     [HttpPost("results")]
     public async Task<IActionResult> SubmitResult([FromBody] SubmitListeningResultRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<SubmitListeningResultRequest, object>(_submitResultValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _submitResultValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _listeningService.SubmitResultAsync(GetUserId(), request));
+        Guid userId = GetUserId();
+        var result = await _listeningService.SubmitResultAsync(userId, request);
+        return Ok(result);
     }
 
     [Authorize]
     [HttpGet("results/my")]
     public async Task<IActionResult> GetMyResults()
-        => Ok(await _listeningService.GetUserResultsAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _listeningService.GetUserResultsAsync(userId);
+        return Ok(result);
+    }
 
-    private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }
 
 [ApiController]
@@ -79,18 +112,31 @@ public class ListeningController : ControllerBase
 public class DictationController : ControllerBase
 {
     private readonly IListeningService _listeningService;
-    public DictationController(IListeningService listeningService) => _listeningService = listeningService;
+
+    public DictationController(IListeningService listeningService)
+    {
+        _listeningService = listeningService;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _listeningService.GetDictationSetsAsync());
+    {
+        var result = await _listeningService.GetDictationSetsAsync();
+        return Ok(result);
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
-        => Ok(await _listeningService.GetDictationSetByIdAsync(id));
+    {
+        var result = await _listeningService.GetDictationSetByIdAsync(id);
+        return Ok(result);
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDictationSetRequest request)
-        => Ok(await _listeningService.CreateDictationSetAsync(request));
+    {
+        var result = await _listeningService.CreateDictationSetAsync(request);
+        return Ok(result);
+    }
 }

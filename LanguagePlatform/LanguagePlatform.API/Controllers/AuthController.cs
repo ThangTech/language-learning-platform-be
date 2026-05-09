@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using FluentValidation;
-using LanguagePlatform.API.Helpers;
 using LanguagePlatform.Application.DTOs.Auth;
+using LanguagePlatform.Application.DTOs.Common;
 using LanguagePlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,46 +35,76 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<LoginRequest, object>(_loginValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        // Kiểm tra dữ liệu đầu vào
+        var ketQua = await _loginValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _authService.LoginAsync(request));
+        var result = await _authService.LoginAsync(request);
+        return Ok(result);
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<RegisterRequest, object>(_registerValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _registerValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _authService.RegisterAsync(request));
+        var result = await _authService.RegisterAsync(request);
+        return Ok(result);
     }
 
     [Authorize]
     [HttpGet("profile")]
     public async Task<IActionResult> GetProfile()
-        => Ok(await _authService.GetProfileAsync(GetUserId()));
+    {
+        Guid userId = GetUserId();
+        var result = await _authService.GetProfileAsync(userId);
+        return Ok(result);
+    }
 
     [Authorize]
     [HttpPut("profile")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<UpdateProfileRequest, object>(_updateProfileValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _updateProfileValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _authService.UpdateProfileAsync(GetUserId(), request));
+        Guid userId = GetUserId();
+        var result = await _authService.UpdateProfileAsync(userId, request);
+        return Ok(result);
     }
 
     [Authorize]
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        var invalid = await ValidationHelper.ValidateAsync<ChangePasswordRequest, object>(_changePasswordValidator, request);
-        if (invalid != null) return BadRequest(invalid);
+        var ketQua = await _changePasswordValidator.ValidateAsync(request);
+        if (!ketQua.IsValid)
+        {
+            var danhSachLoi = ketQua.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.Fail(danhSachLoi[0], danhSachLoi));
+        }
 
-        return Ok(await _authService.ChangePasswordAsync(GetUserId(), request));
+        Guid userId = GetUserId();
+        var result = await _authService.ChangePasswordAsync(userId, request);
+        return Ok(result);
     }
 
-    private Guid GetUserId() =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetUserId()
+    {
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userId!);
+    }
 }
