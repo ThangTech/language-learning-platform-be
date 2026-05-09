@@ -1,5 +1,7 @@
 using System.Text;
+using LanguagePlatform.API.Middleware;
 using LanguagePlatform.Infrastructure;
+using LanguagePlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -69,6 +71,15 @@ builder.Services.AddCors(options =>
 
 // ── Pipeline ──────────────────────────────────────────────────────────────────
 var app = builder.Build();
+
+// Seed database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DataSeeder.SeedAsync(db);
+}
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
