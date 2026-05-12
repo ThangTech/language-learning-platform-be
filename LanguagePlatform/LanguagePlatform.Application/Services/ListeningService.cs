@@ -184,7 +184,10 @@ public class ListeningService : IListeningService
             .Select(sentence => new DictationSentence
             {
                 Sentence = sentence.Sentence,
+                AudioTitle = sentence.AudioTitle,
                 AudioUrl = sentence.AudioUrl,
+                Hint = sentence.Hint,
+                Duration = sentence.Duration,
                 OrderIndex = sentence.OrderIndex
             })
             .ToList();
@@ -192,7 +195,9 @@ public class ListeningService : IListeningService
         var set = new DictationSet
         {
             Title = request.Title,
+            Description = request.Description,
             Level = request.Level,
+            Topic = request.Topic,
             Sentences = sentences
         };
 
