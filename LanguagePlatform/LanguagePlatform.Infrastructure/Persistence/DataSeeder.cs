@@ -15,6 +15,7 @@ public static class DataSeeder
         await SeedAdminUserAsync(db);
         await SeedSampleWordsAsync(db);
         await SeedSampleGrammarAsync(db);
+        await SeedSampleListeningAsync(db);
     }
 
     // ── Admin User ────────────────────────────────────────────────────────────
@@ -75,6 +76,123 @@ public static class DataSeeder
         };
 
         db.GrammarTopics.AddRange(topics);
+        await db.SaveChangesAsync();
+    }
+
+    // ── Sample Listening Lessons ────────────────────────────────────────────────
+
+    private static async Task SeedSampleListeningAsync(AppDbContext db)
+    {
+        if (await db.ListeningLessons.AnyAsync())
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+
+        var airportLesson = new ListeningLesson
+        {
+            Id = Guid.NewGuid(),
+            Title = "Airport announcement",
+            Description = "Short VSTEP-style announcement about a flight gate change.",
+            AudioUrl = "",
+            Level = "A1",
+            Topic = "Travel",
+            Duration = 75,
+            TranscriptJson = "[{\"time\":\"0:00\",\"speaker\":\"Announcer\",\"text\":\"Attention please. Flight BA 245 to London will now leave from Gate 12.\"},{\"time\":\"0:12\",\"speaker\":\"Announcer\",\"text\":\"Passengers should go to the gate now. Boarding starts in ten minutes.\"}]",
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var conversationLesson = new ListeningLesson
+        {
+            Id = Guid.NewGuid(),
+            Title = "Conversation at a bookshop",
+            Description = "A short conversation between a student and a shop assistant.",
+            AudioUrl = "",
+            Level = "A2",
+            Topic = "Shopping",
+            Duration = 130,
+            TranscriptJson = "[{\"time\":\"0:00\",\"speaker\":\"Student\",\"text\":\"Excuse me, do you have English grammar books for beginners?\"},{\"time\":\"0:08\",\"speaker\":\"Assistant\",\"text\":\"Yes. They are on the second shelf near the window.\"}]",
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var talkLesson = new ListeningLesson
+        {
+            Id = Guid.NewGuid(),
+            Title = "Talk about daily study habits",
+            Description = "A short talk about how to build a daily English learning routine.",
+            AudioUrl = "",
+            Level = "B1",
+            Topic = "Study",
+            Duration = 180,
+            TranscriptJson = "[{\"time\":\"0:00\",\"speaker\":\"Speaker\",\"text\":\"Learning English every day does not need to take many hours.\"},{\"time\":\"0:10\",\"speaker\":\"Speaker\",\"text\":\"A good plan is to study vocabulary, listen to short talks, and review mistakes.\"}]",
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var lectureLesson = new ListeningLesson
+        {
+            Id = Guid.NewGuid(),
+            Title = "Mini lecture about online learning",
+            Description = "A B2 lecture-style listening lesson about the benefits of online learning.",
+            AudioUrl = "",
+            Level = "B2",
+            Topic = "Education",
+            Duration = 240,
+            TranscriptJson = "[{\"time\":\"0:00\",\"speaker\":\"Lecturer\",\"text\":\"Online learning has changed the way students access education.\"},{\"time\":\"0:14\",\"speaker\":\"Lecturer\",\"text\":\"It gives learners more flexibility, but it also requires self-discipline and clear goals.\"}]",
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        db.ListeningLessons.AddRange(
+            airportLesson,
+            conversationLesson,
+            talkLesson,
+            lectureLesson);
+
+        var dictationSet = new DictationSet
+        {
+            Id = Guid.NewGuid(),
+            Title = "Dictation: airport instructions",
+            Description = "Listen to short airport sentences and type what you hear.",
+            Level = "A2",
+            Topic = "Travel",
+            LessonId = airportLesson.Id,
+            Sentences = new List<DictationSentence>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Sentence = "The flight to London leaves from gate twelve.",
+                    AudioTitle = "Sentence 1 - Gate change",
+                    Hint = "Listen for the city and gate number.",
+                    Duration = 8,
+                    OrderIndex = 1
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Sentence = "Please keep your passport ready for boarding.",
+                    AudioTitle = "Sentence 2 - Boarding instruction",
+                    Hint = "Listen for the document passengers need.",
+                    Duration = 7,
+                    OrderIndex = 2
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Sentence = "Boarding starts in ten minutes.",
+                    AudioTitle = "Sentence 3 - Time notice",
+                    Hint = "Listen for the time expression.",
+                    Duration = 6,
+                    OrderIndex = 3
+                }
+            }
+        };
+
+        db.DictationSets.Add(dictationSet);
         await db.SaveChangesAsync();
     }
 }
