@@ -94,8 +94,8 @@ public static class DataSeeder
         var airportLesson = new ListeningLesson
         {
             Id = Guid.NewGuid(),
-            Title = "Airport announcement",
-            Description = "Short VSTEP-style announcement about a flight gate change.",
+            Title = "Thông báo tại sân bay",
+            Description = "Bài nghe ngắn mẫu VSTEP về thông báo thay đổi cổng bay.",
             AudioUrl = "",
             Level = "A1",
             Topic = "Travel",
@@ -108,8 +108,8 @@ public static class DataSeeder
         var conversationLesson = new ListeningLesson
         {
             Id = Guid.NewGuid(),
-            Title = "Conversation at a bookshop",
-            Description = "A short conversation between a student and a shop assistant.",
+            Title = "Hội thoại tại nhà sách",
+            Description = "Bài nghe hội thoại ngắn giữa học sinh và nhân viên bán hàng.",
             AudioUrl = "",
             Level = "A2",
             Topic = "Shopping",
@@ -122,8 +122,8 @@ public static class DataSeeder
         var talkLesson = new ListeningLesson
         {
             Id = Guid.NewGuid(),
-            Title = "Talk about daily study habits",
-            Description = "A short talk about how to build a daily English learning routine.",
+            Title = "Bài nói về thói quen học hàng ngày",
+            Description = "Bài nói ngắn về cách xây dựng thói quen học tiếng Anh hàng ngày.",
             AudioUrl = "",
             Level = "B1",
             Topic = "Study",
@@ -136,8 +136,8 @@ public static class DataSeeder
         var lectureLesson = new ListeningLesson
         {
             Id = Guid.NewGuid(),
-            Title = "Mini lecture about online learning",
-            Description = "A B2 lecture-style listening lesson about the benefits of online learning.",
+            Title = "Bài giảng nhỏ về học trực tuyến",
+            Description = "Bài nghe dạng bài giảng B2 về lợi ích của học trực tuyến.",
             AudioUrl = "",
             Level = "B2",
             Topic = "Education",
@@ -156,8 +156,8 @@ public static class DataSeeder
         var dictationSet = new DictationSet
         {
             Id = Guid.NewGuid(),
-            Title = "Dictation: airport instructions",
-            Description = "Listen to short airport sentences and type what you hear.",
+            Title = "Chép chính tả: chỉ dẫn tại sân bay",
+            Description = "Nghe các câu ngắn tại sân bay và gõ lại nội dung.",
             Level = "A2",
             Topic = "Travel",
             LessonId = airportLesson.Id,
@@ -167,8 +167,8 @@ public static class DataSeeder
                 {
                     Id = Guid.NewGuid(),
                     Sentence = "The flight to London leaves from gate twelve.",
-                    AudioTitle = "Sentence 1 - Gate change",
-                    Hint = "Listen for the city and gate number.",
+                    AudioTitle = "Câu 1 - Thay đổi cổng",
+                    Hint = "Nghe để bắt số cổng và thành phố.",
                     Duration = 8,
                     OrderIndex = 1
                 },
@@ -176,8 +176,8 @@ public static class DataSeeder
                 {
                     Id = Guid.NewGuid(),
                     Sentence = "Please keep your passport ready for boarding.",
-                    AudioTitle = "Sentence 2 - Boarding instruction",
-                    Hint = "Listen for the document passengers need.",
+                    AudioTitle = "Câu 2 - Hướng dẫn lên máy bay",
+                    Hint = "Nghe để biết loại giấy tờ cần chuẩn bị.",
                     Duration = 7,
                     OrderIndex = 2
                 },
@@ -185,8 +185,8 @@ public static class DataSeeder
                 {
                     Id = Guid.NewGuid(),
                     Sentence = "Boarding starts in ten minutes.",
-                    AudioTitle = "Sentence 3 - Time notice",
-                    Hint = "Listen for the time expression.",
+                    AudioTitle = "Câu 3 - Thông báo thời gian",
+                    Hint = "Nghe để bắt biểu thức thời gian.",
                     Duration = 6,
                     OrderIndex = 3
                 }
@@ -210,8 +210,8 @@ public static class DataSeeder
             db,
             quizzes,
             lessons,
-            "Airport announcement",
-            "Quiz: airport announcement",
+            "Thông báo tại sân bay",
+            "Bài quiz: thông báo tại sân bay",
             QuizDifficulty.Easy,
             QuizType.MultipleChoice,
             8,
@@ -237,8 +237,8 @@ public static class DataSeeder
             db,
             quizzes,
             lessons,
-            "Conversation at a bookshop",
-            "Fill in blanks: bookshop conversation",
+            "Hội thoại tại nhà sách",
+            "Điền từ: hội thoại nhà sách",
             QuizDifficulty.Medium,
             QuizType.FillInBlank,
             10,
@@ -258,8 +258,8 @@ public static class DataSeeder
             db,
             quizzes,
             lessons,
-            "Talk about daily study habits",
-            "Quiz: daily study habits",
+            "Bài nói về thói quen học hàng ngày",
+            "Bài quiz: thói quen học hàng ngày",
             QuizDifficulty.Medium,
             QuizType.MultipleChoice,
             12,
@@ -285,8 +285,8 @@ public static class DataSeeder
             db,
             quizzes,
             lessons,
-            "Mini lecture about online learning",
-            "Quiz: online learning lecture",
+            "Bài giảng nhỏ về học trực tuyến",
+            "Bài quiz: bài giảng học trực tuyến",
             QuizDifficulty.Hard,
             QuizType.MultipleChoice,
             15,
