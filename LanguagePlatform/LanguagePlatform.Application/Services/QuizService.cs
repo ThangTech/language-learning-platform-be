@@ -11,13 +11,16 @@ namespace LanguagePlatform.Application.Services;
 public class QuizService : IQuizService
 {
     private readonly IQuizRepository _quizRepo;
+    private readonly IProgressService _progressService;
     private readonly IMapper _mapper;
 
     public QuizService(
         IQuizRepository quizRepo,
+        IProgressService progressService,
         IMapper mapper)
     {
         _quizRepo = quizRepo;
+        _progressService = progressService;
         _mapper = mapper;
     }
 
@@ -184,6 +187,8 @@ public class QuizService : IQuizService
             TotalQuestions = total,
             Answers = details
         };
+
+        await _progressService.RecordCompletionAsync(userId, "quiz", score);
 
         return ApiResponse<QuizResultDto>.Ok(
             result,

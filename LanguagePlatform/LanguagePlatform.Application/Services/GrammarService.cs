@@ -12,12 +12,18 @@ public class GrammarService : IGrammarService
 {
     private readonly IGrammarRepository _grammarRepo;
     private readonly IUserGrammarRepository _userGrammarRepo;
+    private readonly IProgressService _progressService;
     private readonly IMapper _mapper;
 
-    public GrammarService(IGrammarRepository grammarRepo, IUserGrammarRepository userGrammarRepo, IMapper mapper)
+    public GrammarService(
+        IGrammarRepository grammarRepo,
+        IUserGrammarRepository userGrammarRepo,
+        IProgressService progressService,
+        IMapper mapper)
     {
         _grammarRepo = grammarRepo;
         _userGrammarRepo = userGrammarRepo;
+        _progressService = progressService;
         _mapper = mapper;
     }
 
@@ -82,23 +88,39 @@ public class GrammarService : IGrammarService
     public async Task<ApiResponse<bool>> MarkTopicCompletedAsync(Guid userId, Guid topicId)
     {
         var existing = await _userGrammarRepo.GetByUserAndTopicAsync(userId, topicId);
+        var isNewCompletion = false;
+
         if (existing != null)
         {
-            existing.IsCompleted = true;
-            existing.CompletedAt = DateTime.UtcNow;
-            _userGrammarRepo.Update(existing);
+            if (!existing.IsCompleted)
+            {
+                existing.IsCompleted = true;
+                existing.CompletedAt = DateTime.UtcNow;
+                _userGrammarRepo.Update(existing);
+                isNewCompletion = true;
+            }
         }
         else
         {
-            await _userGrammarRepo.AddAsync(new UserGrammar
+            var userGrammar = new UserGrammar
             {
                 UserId = userId,
                 TopicId = topicId,
                 IsCompleted = true,
                 CompletedAt = DateTime.UtcNow
-            });
+            };
+
+            await _userGrammarRepo.AddAsync(userGrammar);
+            isNewCompletion = true;
         }
+
         await _userGrammarRepo.SaveChangesAsync();
+
+        if (isNewCompletion)
+        {
+            await _progressService.RecordCompletionAsync(userId, "grammar", 5);
+        }
+
         return ApiResponse<bool>.Ok(true, "Đã đánh dấu hoàn thành.");
     }
 }

@@ -10,4 +10,6 @@ public interface IProgressService
     Task<ApiResponse<bool>> UpdateStreakAsync(Guid userId);
     Task<ApiResponse<IEnumerable<LeaderboardEntryDto>>> GetLeaderboardAsync(int top = 10);
     Task<ApiResponse<bool>> AddScoreAsync(Guid userId, int score);
+
+    Task<ApiResponse<bool>> RecordCompletionAsync(Guid userId, string activityType, int score = 0);
 }
