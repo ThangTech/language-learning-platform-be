@@ -201,98 +201,189 @@ public static class DataSeeder
 
     private static async Task SeedSampleQuizzesAsync(AppDbContext db)
     {
-        if (await db.Quizzes.AnyAsync())
+        var lessons = await db.ListeningLessons
+            .ToListAsync();
+
+        var quizzes = new List<Quiz>();
+
+        AddQuizIfMissing(
+            db,
+            quizzes,
+            lessons,
+            "Airport announcement",
+            "Quiz: airport announcement",
+            QuizDifficulty.Easy,
+            QuizType.MultipleChoice,
+            8,
+            new List<QuizQuestion>
+            {
+                CreateMultipleChoiceQuestion(
+                    "Where will the flight to London leave from?",
+                    "Gate 12",
+                    "The announcement says the flight leaves from Gate 12.",
+                    "Gate 10",
+                    "Gate 12",
+                    "Gate 20"),
+                CreateMultipleChoiceQuestion(
+                    "When does boarding start?",
+                    "In ten minutes",
+                    "The speaker says boarding starts in ten minutes.",
+                    "In five minutes",
+                    "In ten minutes",
+                    "In twenty minutes")
+            });
+
+        AddQuizIfMissing(
+            db,
+            quizzes,
+            lessons,
+            "Conversation at a bookshop",
+            "Fill in blanks: bookshop conversation",
+            QuizDifficulty.Medium,
+            QuizType.FillInBlank,
+            10,
+            new List<QuizQuestion>
+            {
+                CreateFillInBlankQuestion(
+                    "The student asks for English grammar books for ______.",
+                    "beginners",
+                    "The student says: grammar books for beginners."),
+                CreateFillInBlankQuestion(
+                    "The books are on the second shelf near the ______.",
+                    "window",
+                    "The assistant says the books are near the window.")
+            });
+
+        AddQuizIfMissing(
+            db,
+            quizzes,
+            lessons,
+            "Talk about daily study habits",
+            "Quiz: daily study habits",
+            QuizDifficulty.Medium,
+            QuizType.MultipleChoice,
+            12,
+            new List<QuizQuestion>
+            {
+                CreateMultipleChoiceQuestion(
+                    "What is the main idea of the talk?",
+                    "Study a little every day",
+                    "The talk explains how daily study builds a better habit.",
+                    "Study only on weekends",
+                    "Study a little every day",
+                    "Stop reviewing mistakes"),
+                CreateMultipleChoiceQuestion(
+                    "What should learners review?",
+                    "Mistakes",
+                    "The speaker says learners should review mistakes.",
+                    "Only new words",
+                    "Mistakes",
+                    "Movies")
+            });
+
+        AddQuizIfMissing(
+            db,
+            quizzes,
+            lessons,
+            "Mini lecture about online learning",
+            "Quiz: online learning lecture",
+            QuizDifficulty.Hard,
+            QuizType.MultipleChoice,
+            15,
+            new List<QuizQuestion>
+            {
+                CreateMultipleChoiceQuestion(
+                    "What has online learning changed?",
+                    "How students access education",
+                    "The lecturer says online learning changed access to education.",
+                    "How students buy food",
+                    "How students access education",
+                    "How students travel"),
+                CreateMultipleChoiceQuestion(
+                    "What does online learning require?",
+                    "Self-discipline and clear goals",
+                    "The lecturer says it requires self-discipline and clear goals.",
+                    "More classrooms",
+                    "Self-discipline and clear goals",
+                    "Longer holidays")
+            });
+
+        if (quizzes.Count == 0)
         {
             return;
         }
 
-        var airportLesson = await db.ListeningLessons
-            .FirstOrDefaultAsync(lesson => lesson.Title == "Airport announcement");
-
-        var bookshopLesson = await db.ListeningLessons
-            .FirstOrDefaultAsync(lesson => lesson.Title == "Conversation at a bookshop");
-
-        if (airportLesson == null || bookshopLesson == null)
-        {
-            return;
-        }
-
-        var airportQuiz = new Quiz
-        {
-            Id = Guid.NewGuid(),
-            Title = "Quiz: airport announcement",
-            LessonId = airportLesson.Id,
-            Difficulty = QuizDifficulty.Easy,
-            Type = QuizType.MultipleChoice,
-            DurationMinutes = 8,
-            Questions = new List<QuizQuestion>
-            {
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    QuestionText = "Where will the flight to London leave from?",
-                    Type = QuestionType.MultipleChoice,
-                    Options = new List<string>
-                    {
-                        "Gate 10",
-                        "Gate 12",
-                        "Gate 20"
-                    },
-                    CorrectAnswer = "Gate 12",
-                    Explanation = "The announcement says the flight leaves from Gate 12."
-                },
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    QuestionText = "When does boarding start?",
-                    Type = QuestionType.MultipleChoice,
-                    Options = new List<string>
-                    {
-                        "In five minutes",
-                        "In ten minutes",
-                        "In twenty minutes"
-                    },
-                    CorrectAnswer = "In ten minutes",
-                    Explanation = "The speaker says boarding starts in ten minutes."
-                }
-            }
-        };
-
-        var bookshopQuiz = new Quiz
-        {
-            Id = Guid.NewGuid(),
-            Title = "Fill in blanks: bookshop conversation",
-            LessonId = bookshopLesson.Id,
-            Difficulty = QuizDifficulty.Medium,
-            Type = QuizType.FillInBlank,
-            DurationMinutes = 10,
-            Questions = new List<QuizQuestion>
-            {
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    QuestionText = "The student asks for English grammar books for ______.",
-                    Type = QuestionType.FillInBlank,
-                    Options = new List<string>(),
-                    CorrectAnswer = "beginners",
-                    Explanation = "The student says: grammar books for beginners."
-                },
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    QuestionText = "The books are on the second shelf near the ______.",
-                    Type = QuestionType.FillInBlank,
-                    Options = new List<string>(),
-                    CorrectAnswer = "window",
-                    Explanation = "The assistant says the books are near the window."
-                }
-            }
-        };
-
-        db.Quizzes.AddRange(
-            airportQuiz,
-            bookshopQuiz);
-
+        db.Quizzes.AddRange(quizzes);
         await db.SaveChangesAsync();
+    }
+
+    private static void AddQuizIfMissing(
+        AppDbContext db,
+        List<Quiz> quizzes,
+        List<ListeningLesson> lessons,
+        string lessonTitle,
+        string quizTitle,
+        QuizDifficulty difficulty,
+        QuizType type,
+        int durationMinutes,
+        List<QuizQuestion> questions)
+    {
+        var alreadyExists = db.Quizzes.Any(quiz => quiz.Title == quizTitle);
+
+        if (alreadyExists)
+        {
+            return;
+        }
+
+        var lesson = lessons.FirstOrDefault(item => item.Title == lessonTitle);
+
+        if (lesson == null)
+        {
+            return;
+        }
+
+        quizzes.Add(new Quiz
+        {
+            Id = Guid.NewGuid(),
+            Title = quizTitle,
+            LessonId = lesson.Id,
+            Difficulty = difficulty,
+            Type = type,
+            DurationMinutes = durationMinutes,
+            Questions = questions
+        });
+    }
+
+    private static QuizQuestion CreateMultipleChoiceQuestion(
+        string text,
+        string answer,
+        string explanation,
+        params string[] options)
+    {
+        return new QuizQuestion
+        {
+            Id = Guid.NewGuid(),
+            QuestionText = text,
+            Type = QuestionType.MultipleChoice,
+            Options = options.ToList(),
+            CorrectAnswer = answer,
+            Explanation = explanation
+        };
+    }
+
+    private static QuizQuestion CreateFillInBlankQuestion(
+        string text,
+        string answer,
+        string explanation)
+    {
+        return new QuizQuestion
+        {
+            Id = Guid.NewGuid(),
+            QuestionText = text,
+            Type = QuestionType.FillInBlank,
+            Options = new List<string>(),
+            CorrectAnswer = answer,
+            Explanation = explanation
+        };
     }
 }
