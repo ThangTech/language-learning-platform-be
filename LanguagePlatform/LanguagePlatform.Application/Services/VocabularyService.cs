@@ -110,20 +110,62 @@ public class VocabularyService : IVocabularyService
         return ApiResponse<IEnumerable<FlashcardDto>>.Ok(_mapper.Map<List<FlashcardDto>>(cards));
     }
 
+    public async Task<ApiResponse<IEnumerable<FlashcardDto>>> GetReviewableFlashcardsAsync(Guid userId)
+    {
+        var cards = await _flashcardRepo.GetReviewableAsync(userId);
+        return ApiResponse<IEnumerable<FlashcardDto>>.Ok(_mapper.Map<List<FlashcardDto>>(cards));
+    }
+
     public async Task<ApiResponse<FlashcardDto>> AddToFlashcardAsync(Guid userId, Guid wordId)
     {
         var exists = await _flashcardRepo.GetByUserAndWordAsync(userId, wordId);
-        if (exists != null) return ApiResponse<FlashcardDto>.Fail("Từ này đã có trong flashcard.");
-        var card = new Flashcard { UserId = userId, WordId = wordId };
+        if (exists != null)
+        {
+            return ApiResponse<FlashcardDto>.Fail("Từ này đã có trong flashcard.");
+        }
+
+        var card = new Flashcard
+        {
+            UserId = userId,
+            WordId = wordId
+        };
+
         await _flashcardRepo.AddAsync(card);
         await _flashcardRepo.SaveChangesAsync();
         return ApiResponse<FlashcardDto>.Ok(_mapper.Map<FlashcardDto>(card), "Đã thêm vào flashcard.");
     }
 
+    public async Task<ApiResponse<FlashcardDto>> MarkFlashcardAsReviewedAsync(Guid userId, Guid wordId)
+    {
+        var card = await _flashcardRepo.GetByUserAndWordAsync(userId, wordId);
+        if (card == null)
+        {
+            return ApiResponse<FlashcardDto>.Fail("Không tìm thấy flashcard.");
+        }
+
+        card.ReviewCount++;
+        card.NextReviewAt = CalculateNextReview(card.ReviewCount);
+        card.IsLearned = card.ReviewCount >= 3;
+
+        if (card.IsLearned)
+        {
+            card.LearnedAt = DateTime.UtcNow;
+        }
+
+        _flashcardRepo.Update(card);
+        await _flashcardRepo.SaveChangesAsync();
+
+        return ApiResponse<FlashcardDto>.Ok(_mapper.Map<FlashcardDto>(card), "Đã ôn tập flashcard.");
+    }
+
     public async Task<ApiResponse<bool>> MarkFlashcardLearnedAsync(Guid userId, Guid wordId)
     {
         var card = await _flashcardRepo.GetByUserAndWordAsync(userId, wordId);
-        if (card == null) return ApiResponse<bool>.Fail("Không tìm thấy flashcard.");
+        if (card == null)
+        {
+            return ApiResponse<bool>.Fail("Không tìm thấy flashcard.");
+        }
+
         card.IsLearned = true;
         card.LearnedAt = DateTime.UtcNow;
         _flashcardRepo.Update(card);
@@ -134,9 +176,43 @@ public class VocabularyService : IVocabularyService
     public async Task<ApiResponse<bool>> RemoveFlashcardAsync(Guid userId, Guid wordId)
     {
         var card = await _flashcardRepo.GetByUserAndWordAsync(userId, wordId);
-        if (card == null) return ApiResponse<bool>.Fail("Không tìm thấy flashcard.");
+        if (card == null)
+        {
+            return ApiResponse<bool>.Fail("Không tìm thấy flashcard.");
+        }
+
         _flashcardRepo.Delete(card);
         await _flashcardRepo.SaveChangesAsync();
         return ApiResponse<bool>.Ok(true, "Đã xóa flashcard.");
+    }
+
+    private static DateTime CalculateNextReview(int reviewCount)
+    {
+        if (reviewCount == 1)
+        {
+            return DateTime.UtcNow.AddHours(6);
+        }
+
+        if (reviewCount == 2)
+        {
+            return DateTime.UtcNow.AddDays(1);
+        }
+
+        if (reviewCount == 3)
+        {
+            return DateTime.UtcNow.AddDays(3);
+        }
+
+        if (reviewCount == 4)
+        {
+            return DateTime.UtcNow.AddDays(7);
+        }
+
+        if (reviewCount == 5)
+        {
+            return DateTime.UtcNow.AddDays(14);
+        }
+
+        return DateTime.UtcNow.AddDays(30);
     }
 }

@@ -19,7 +19,9 @@ public interface IVocabularyService
 
     // Flashcards
     Task<ApiResponse<IEnumerable<FlashcardDto>>> GetFlashcardsAsync(Guid userId);
+    Task<ApiResponse<IEnumerable<FlashcardDto>>> GetReviewableFlashcardsAsync(Guid userId);
     Task<ApiResponse<FlashcardDto>> AddToFlashcardAsync(Guid userId, Guid wordId);
     Task<ApiResponse<bool>> MarkFlashcardLearnedAsync(Guid userId, Guid wordId);
+    Task<ApiResponse<FlashcardDto>> MarkFlashcardAsReviewedAsync(Guid userId, Guid wordId);
     Task<ApiResponse<bool>> RemoveFlashcardAsync(Guid userId, Guid wordId);
 }

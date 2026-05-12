@@ -52,4 +52,16 @@ public class FlashcardRepository : GenericRepository<Flashcard>, IFlashcardRepos
 
     public async Task<IEnumerable<Flashcard>> GetUnlearnedAsync(Guid userId)
         => await _dbSet.Include(f => f.Word).Where(f => f.UserId == userId && !f.IsLearned).ToListAsync();
+
+    public async Task<IEnumerable<Flashcard>> GetReviewableAsync(Guid userId)
+    {
+        var now = DateTime.UtcNow;
+        return await _dbSet
+            .Include(f => f.Word)
+            .Where(f =>
+                f.UserId == userId &&
+                (!f.IsLearned ||
+                (f.NextReviewAt.HasValue && f.NextReviewAt <= now)))
+            .ToListAsync();
+    }
 }

@@ -148,6 +148,14 @@ public class FlashcardsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("review")]
+    public async Task<IActionResult> GetReviewable()
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.GetReviewableFlashcardsAsync(userId);
+        return Ok(result);
+    }
+
     [HttpPost("{wordId:guid}")]
     public async Task<IActionResult> Add(Guid wordId)
     {
@@ -161,6 +169,14 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.MarkFlashcardLearnedAsync(userId, wordId);
+        return Ok(result);
+    }
+
+    [HttpPut("{wordId:guid}/reviewed")]
+    public async Task<IActionResult> MarkReviewed(Guid wordId)
+    {
+        Guid userId = GetUserId();
+        var result = await _vocabService.MarkFlashcardAsReviewedAsync(userId, wordId);
         return Ok(result);
     }
 
