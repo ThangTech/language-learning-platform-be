@@ -16,6 +16,7 @@ public static class DataSeeder
         await SeedSampleWordsAsync(db);
         await SeedSampleGrammarAsync(db);
         await SeedSampleListeningAsync(db);
+        await SeedSampleQuizzesAsync(db);
     }
 
     // ── Admin User ────────────────────────────────────────────────────────────
@@ -193,6 +194,105 @@ public static class DataSeeder
         };
 
         db.DictationSets.Add(dictationSet);
+        await db.SaveChangesAsync();
+    }
+
+    // ── Sample Listening Quizzes ────────────────────────────────────────────────
+
+    private static async Task SeedSampleQuizzesAsync(AppDbContext db)
+    {
+        if (await db.Quizzes.AnyAsync())
+        {
+            return;
+        }
+
+        var airportLesson = await db.ListeningLessons
+            .FirstOrDefaultAsync(lesson => lesson.Title == "Airport announcement");
+
+        var bookshopLesson = await db.ListeningLessons
+            .FirstOrDefaultAsync(lesson => lesson.Title == "Conversation at a bookshop");
+
+        if (airportLesson == null || bookshopLesson == null)
+        {
+            return;
+        }
+
+        var airportQuiz = new Quiz
+        {
+            Id = Guid.NewGuid(),
+            Title = "Quiz: airport announcement",
+            LessonId = airportLesson.Id,
+            Difficulty = QuizDifficulty.Easy,
+            Type = QuizType.MultipleChoice,
+            DurationMinutes = 8,
+            Questions = new List<QuizQuestion>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    QuestionText = "Where will the flight to London leave from?",
+                    Type = QuestionType.MultipleChoice,
+                    Options = new List<string>
+                    {
+                        "Gate 10",
+                        "Gate 12",
+                        "Gate 20"
+                    },
+                    CorrectAnswer = "Gate 12",
+                    Explanation = "The announcement says the flight leaves from Gate 12."
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    QuestionText = "When does boarding start?",
+                    Type = QuestionType.MultipleChoice,
+                    Options = new List<string>
+                    {
+                        "In five minutes",
+                        "In ten minutes",
+                        "In twenty minutes"
+                    },
+                    CorrectAnswer = "In ten minutes",
+                    Explanation = "The speaker says boarding starts in ten minutes."
+                }
+            }
+        };
+
+        var bookshopQuiz = new Quiz
+        {
+            Id = Guid.NewGuid(),
+            Title = "Fill in blanks: bookshop conversation",
+            LessonId = bookshopLesson.Id,
+            Difficulty = QuizDifficulty.Medium,
+            Type = QuizType.FillInBlank,
+            DurationMinutes = 10,
+            Questions = new List<QuizQuestion>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    QuestionText = "The student asks for English grammar books for ______.",
+                    Type = QuestionType.FillInBlank,
+                    Options = new List<string>(),
+                    CorrectAnswer = "beginners",
+                    Explanation = "The student says: grammar books for beginners."
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    QuestionText = "The books are on the second shelf near the ______.",
+                    Type = QuestionType.FillInBlank,
+                    Options = new List<string>(),
+                    CorrectAnswer = "window",
+                    Explanation = "The assistant says the books are near the window."
+                }
+            }
+        };
+
+        db.Quizzes.AddRange(
+            airportQuiz,
+            bookshopQuiz);
+
         await db.SaveChangesAsync();
     }
 }
