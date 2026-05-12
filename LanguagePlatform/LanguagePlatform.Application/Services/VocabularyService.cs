@@ -13,17 +13,20 @@ public class VocabularyService : IVocabularyService
     private readonly IWordRepository _wordRepo;
     private readonly IFavoriteRepository _favoriteRepo;
     private readonly IFlashcardRepository _flashcardRepo;
+    private readonly IProgressService _progressService;
     private readonly IMapper _mapper;
 
     public VocabularyService(
         IWordRepository wordRepo,
         IFavoriteRepository favoriteRepo,
         IFlashcardRepository flashcardRepo,
+        IProgressService progressService,
         IMapper mapper)
     {
         _wordRepo = wordRepo;
         _favoriteRepo = favoriteRepo;
         _flashcardRepo = flashcardRepo;
+        _progressService = progressService;
         _mapper = mapper;
     }
 
@@ -143,17 +146,24 @@ public class VocabularyService : IVocabularyService
             return ApiResponse<FlashcardDto>.Fail("Không tìm thấy flashcard.");
         }
 
+        var wasLearned = card.IsLearned;
+
         card.ReviewCount++;
         card.NextReviewAt = CalculateNextReview(card.ReviewCount);
         card.IsLearned = card.ReviewCount >= 3;
 
-        if (card.IsLearned)
+        if (card.IsLearned && !wasLearned)
         {
             card.LearnedAt = DateTime.UtcNow;
         }
 
         _flashcardRepo.Update(card);
         await _flashcardRepo.SaveChangesAsync();
+
+        if (card.IsLearned && !wasLearned)
+        {
+            await _progressService.RecordCompletionAsync(userId, "word", 5);
+        }
 
         return ApiResponse<FlashcardDto>.Ok(_mapper.Map<FlashcardDto>(card), "Đã ôn tập flashcard.");
     }
@@ -166,10 +176,18 @@ public class VocabularyService : IVocabularyService
             return ApiResponse<bool>.Fail("Không tìm thấy flashcard.");
         }
 
+        var wasLearned = card.IsLearned;
+
         card.IsLearned = true;
         card.LearnedAt = DateTime.UtcNow;
         _flashcardRepo.Update(card);
         await _flashcardRepo.SaveChangesAsync();
+
+        if (!wasLearned)
+        {
+            await _progressService.RecordCompletionAsync(userId, "word", 5);
+        }
+
         return ApiResponse<bool>.Ok(true, "Đã đánh dấu học xong.");
     }
 

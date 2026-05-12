@@ -12,17 +12,20 @@ public class ListeningService : IListeningService
     private readonly IListeningRepository _lessonRepo;
     private readonly IListeningResultRepository _resultRepo;
     private readonly IDictationSetRepository _dictationRepo;
+    private readonly IProgressService _progressService;
     private readonly IMapper _mapper;
 
     public ListeningService(
         IListeningRepository lessonRepo,
         IListeningResultRepository resultRepo,
         IDictationSetRepository dictationRepo,
+        IProgressService progressService,
         IMapper mapper)
     {
         _lessonRepo = lessonRepo;
         _resultRepo = resultRepo;
         _dictationRepo = dictationRepo;
+        _progressService = progressService;
         _mapper = mapper;
     }
 
@@ -138,6 +141,8 @@ public class ListeningService : IListeningService
 
         await _resultRepo.AddAsync(result);
         await _resultRepo.SaveChangesAsync();
+
+        await _progressService.RecordCompletionAsync(userId, "listening", request.Score);
 
         var resultDto = _mapper.Map<ListeningResultDto>(result);
 
