@@ -24,11 +24,32 @@ public class WordDto
 
     public string LevelColor => GetLevelColor();
 
+    public List<WordLevelDto> Levels => new()
+    {
+        new WordLevelDto
+        {
+            Label = GetShortLevel(),
+            BgColor = GetLevelBgColor(),
+            TextColor = GetLevelTextColor()
+        }
+    };
+
     public string Topic { get; set; } = string.Empty;
 
     public string Category => Topic;
 
     public DateTime CreatedAt { get; set; }
+
+    private string GetShortLevel()
+    {
+        return Level switch
+        {
+            "Beginner" => "A1",
+            "Intermediate" => "B1",
+            "Advanced" => "B2",
+            _ => Level
+        };
+    }
 
     private string GetLevelColor()
     {
@@ -40,6 +61,37 @@ public class WordDto
             _ => "bg-outline text-outline"
         };
     }
+
+    private string GetLevelBgColor()
+    {
+        return Level switch
+        {
+            "Beginner" => "bg-primary-fixed",
+            "Intermediate" => "bg-secondary-fixed",
+            "Advanced" => "bg-tertiary-fixed",
+            _ => "bg-surface-container"
+        };
+    }
+
+    private string GetLevelTextColor()
+    {
+        return Level switch
+        {
+            "Beginner" => "text-on-primary-fixed",
+            "Intermediate" => "text-on-secondary-fixed",
+            "Advanced" => "text-on-tertiary-fixed",
+            _ => "text-on-surface"
+        };
+    }
+}
+
+public class WordLevelDto
+{
+    public string Label { get; set; } = string.Empty;
+
+    public string BgColor { get; set; } = string.Empty;
+
+    public string TextColor { get; set; } = string.Empty;
 }
 
 public class CreateWordRequest
