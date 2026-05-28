@@ -30,6 +30,9 @@ public class ListeningLessonDto
 
     public DateTime CreatedAt { get; set; }
 
+    // Tổng số bài tập: quizzes + dictation sets liên kết với bài nghe này
+    public int TotalExercises { get; set; }
+
     private string FormatDuration()
     {
         var minutes = Duration / 60;
@@ -145,6 +148,8 @@ public class DictationSentenceDto
 
 public class CreateDictationSetRequest
 {
+    public Guid? LessonId { get; set; }
+
     public string Title { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
@@ -179,6 +184,10 @@ public class ListeningResultDto
 
     public int Score { get; set; }
 
+    public int TimeTaken { get; set; }
+
+    public int ListenCount { get; set; }
+
     public DateTime CompletedAt { get; set; }
 }
 
@@ -187,4 +196,8 @@ public class SubmitListeningResultRequest
     public Guid LessonId { get; set; }
 
     public int Score { get; set; }
+
+    public int TimeTaken { get; set; }
+
+    public int ListenCount { get; set; }
 }
