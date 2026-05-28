@@ -12,4 +12,5 @@ public interface IQuizService
     Task<ApiResponse<QuizDto>> UpdateQuizAsync(Guid id, UpdateQuizRequest request);
     Task<ApiResponse<bool>> DeleteQuizAsync(Guid id);
     Task<ApiResponse<QuizResultDto>> SubmitQuizAsync(Guid userId, SubmitQuizRequest request);
+    Task<ApiResponse<IEnumerable<QuizHistoryDto>>> GetMyResultsAsync(Guid userId);
 }
