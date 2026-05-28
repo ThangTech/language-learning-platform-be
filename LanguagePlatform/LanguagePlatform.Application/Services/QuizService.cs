@@ -11,15 +11,18 @@ namespace LanguagePlatform.Application.Services;
 public class QuizService : IQuizService
 {
     private readonly IQuizRepository _quizRepo;
+    private readonly IQuizResultRepository _quizResultRepo;
     private readonly IProgressService _progressService;
     private readonly IMapper _mapper;
 
     public QuizService(
         IQuizRepository quizRepo,
+        IQuizResultRepository quizResultRepo,
         IProgressService progressService,
         IMapper mapper)
     {
         _quizRepo = quizRepo;
+        _quizResultRepo = quizResultRepo;
         _progressService = progressService;
         _mapper = mapper;
     }
@@ -190,23 +193,52 @@ public class QuizService : IQuizService
 
         await _progressService.RecordCompletionAsync(userId, "quiz", score);
 
+        // Lưu kết quả vào database
+        var quizResult = new QuizResult
+        {
+            UserId = userId,
+            QuizId = quiz.Id,
+            Score = score,
+            TotalQuestions = total,
+            CorrectAnswers = correct,
+            CompletedAt = DateTime.UtcNow
+        };
+        await _quizResultRepo.AddAsync(quizResult);
+        await _quizResultRepo.SaveChangesAsync();
+
         return ApiResponse<QuizResultDto>.Ok(
             result,
             "Nộp bài thành công.");
     }
 
+    public async Task<ApiResponse<IEnumerable<QuizHistoryDto>>> GetMyResultsAsync(Guid userId)
+    {
+        var results = await _quizResultRepo.GetByUserIdAsync(userId);
+        var dtos = results.Select(r => new QuizHistoryDto
+        {
+            Id = r.Id,
+            QuizId = r.QuizId,
+            QuizTitle = r.Quiz?.Title ?? "Quiz",
+            Score = r.Score,
+            TotalQuestions = r.TotalQuestions,
+            CorrectAnswers = r.CorrectAnswers,
+            CompletedAt = r.CompletedAt
+        });
+        return ApiResponse<IEnumerable<QuizHistoryDto>>.Ok(dtos);
+    }
+
     private static QuizDifficulty ParseDifficulty(string value)
     {
-        return Enum.Parse<QuizDifficulty>(value, true);
+        return Enum.TryParse<QuizDifficulty>(value, true, out var result) ? result : QuizDifficulty.Easy;
     }
 
     private static QuizType ParseQuizType(string value)
     {
-        return Enum.Parse<QuizType>(value, true);
+        return Enum.TryParse<QuizType>(value, true, out var result) ? result : QuizType.MultipleChoice;
     }
 
     private static QuestionType ParseQuestionType(string value)
     {
-        return Enum.Parse<QuestionType>(value, true);
+        return Enum.TryParse<QuestionType>(value, true, out var result) ? result : QuestionType.MultipleChoice;
     }
 }
