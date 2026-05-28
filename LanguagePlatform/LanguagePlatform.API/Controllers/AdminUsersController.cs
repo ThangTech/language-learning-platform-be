@@ -8,7 +8,7 @@ namespace LanguagePlatform.API.Controllers;
 [ApiController]
 [Route("api/admin/users")]
 [Authorize(Roles = "Admin")]
-public class AdminUsersController : ControllerBase
+public class AdminUsersController : ApiControllerBase
 {
     private readonly IUserAdminService _adminService;
 
@@ -25,7 +25,7 @@ public class AdminUsersController : ControllerBase
         [FromQuery] string? search = null)
     {
         var result = await _adminService.GetAllUsersAsync(page, pageSize, search);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Lấy thông tin chi tiết một người dùng theo ID
@@ -33,7 +33,7 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _adminService.GetUserByIdAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Khóa tài khoản người dùng
@@ -41,7 +41,7 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> Lock(Guid id)
     {
         var result = await _adminService.LockUserAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Mở khóa tài khoản người dùng
@@ -49,7 +49,7 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> Unlock(Guid id)
     {
         var result = await _adminService.UnlockUserAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Xóa tài khoản người dùng
@@ -57,7 +57,7 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _adminService.DeleteUserAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Thay đổi vai trò người dùng (ví dụ: User → Admin)
@@ -65,7 +65,7 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> ChangeRole(Guid id, [FromBody] ChangeRoleRequest request)
     {
         var result = await _adminService.ChangeUserRoleAsync(id, request.Role);
-        return Ok(result);
+        return HandleResult(result);
     }
 }
 
