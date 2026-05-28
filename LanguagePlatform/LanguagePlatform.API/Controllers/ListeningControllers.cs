@@ -10,19 +10,22 @@ namespace LanguagePlatform.API.Controllers;
 
 [ApiController]
 [Route("api/listening")]
-public class ListeningController : ControllerBase
+public class ListeningController : ApiControllerBase
 {
     private readonly IListeningService _listeningService;
     private readonly IValidator<CreateListeningLessonRequest> _createLessonValidator;
+    private readonly IValidator<UpdateListeningLessonRequest> _updateLessonValidator;
     private readonly IValidator<SubmitListeningResultRequest> _submitResultValidator;
 
     public ListeningController(
         IListeningService listeningService,
         IValidator<CreateListeningLessonRequest> createLessonValidator,
+        IValidator<UpdateListeningLessonRequest> updateLessonValidator,
         IValidator<SubmitListeningResultRequest> submitResultValidator)
     {
         _listeningService = listeningService;
         _createLessonValidator = createLessonValidator;
+        _updateLessonValidator = updateLessonValidator;
         _submitResultValidator = submitResultValidator;
     }
 
@@ -34,14 +37,14 @@ public class ListeningController : ControllerBase
         [FromQuery] string? search = null)
     {
         var result = await _listeningService.GetLessonsAsync(page, pageSize, level, search);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _listeningService.GetLessonByIdAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -57,15 +60,23 @@ public class ListeningController : ControllerBase
         }
 
         var result = await _listeningService.CreateLessonAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateListeningLessonRequest request)
     {
+        var validationResult = await _updateLessonValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
+        }
+
         var result = await _listeningService.UpdateLessonAsync(id, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -73,7 +84,7 @@ public class ListeningController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _listeningService.DeleteLessonAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize]
@@ -90,7 +101,7 @@ public class ListeningController : ControllerBase
 
         Guid userId = GetUserId();
         var result = await _listeningService.SubmitResultAsync(userId, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize]
@@ -99,19 +110,13 @@ public class ListeningController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _listeningService.GetUserResultsAsync(userId);
-        return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
 
 [ApiController]
 [Route("api/dictation")]
-public class DictationController : ControllerBase
+public class DictationController : ApiControllerBase
 {
     private readonly IListeningService _listeningService;
 
@@ -124,14 +129,14 @@ public class DictationController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _listeningService.GetDictationSetsAsync();
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _listeningService.GetDictationSetByIdAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -139,6 +144,6 @@ public class DictationController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateDictationSetRequest request)
     {
         var result = await _listeningService.CreateDictationSetAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 }
