@@ -10,7 +10,7 @@ namespace LanguagePlatform.API.Controllers;
 
 [ApiController]
 [Route("api/words")]
-public class WordsController : ControllerBase
+public class WordsController : ApiControllerBase
 {
     private readonly IVocabularyService _vocabService;
     private readonly IValidator<CreateWordRequest> _createValidator;
@@ -34,14 +34,14 @@ public class WordsController : ControllerBase
         [FromQuery] string? search = null)
     {
         var result = await _vocabService.GetWordsAsync(page, pageSize, level, search);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _vocabService.GetWordByIdAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -57,7 +57,7 @@ public class WordsController : ControllerBase
         }
 
         var result = await _vocabService.CreateWordAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -73,7 +73,7 @@ public class WordsController : ControllerBase
         }
 
         var result = await _vocabService.UpdateWordAsync(id, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -81,14 +81,14 @@ public class WordsController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _vocabService.DeleteWordAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 }
 
 [ApiController]
 [Route("api/favorites")]
 [Authorize]
-public class FavoritesController : ControllerBase
+public class FavoritesController : ApiControllerBase
 {
     private readonly IVocabularyService _vocabService;
 
@@ -102,7 +102,7 @@ public class FavoritesController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.GetFavoritesAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpPost("{wordId:guid}")]
@@ -110,7 +110,7 @@ public class FavoritesController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.AddFavoriteAsync(userId, wordId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpDelete("{wordId:guid}")]
@@ -118,20 +118,14 @@ public class FavoritesController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.RemoveFavoriteAsync(userId, wordId);
-        return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
 
 [ApiController]
 [Route("api/flashcards")]
 [Authorize]
-public class FlashcardsController : ControllerBase
+public class FlashcardsController : ApiControllerBase
 {
     private readonly IVocabularyService _vocabService;
 
@@ -145,7 +139,7 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.GetFlashcardsAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("review")]
@@ -153,7 +147,7 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.GetReviewableFlashcardsAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpPost("{wordId:guid}")]
@@ -161,7 +155,7 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.AddToFlashcardAsync(userId, wordId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpPut("{wordId:guid}/learned")]
@@ -169,7 +163,7 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.MarkFlashcardLearnedAsync(userId, wordId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpPut("{wordId:guid}/reviewed")]
@@ -177,7 +171,7 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.MarkFlashcardAsReviewedAsync(userId, wordId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpDelete("{wordId:guid}")]
@@ -185,12 +179,6 @@ public class FlashcardsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _vocabService.RemoveFlashcardAsync(userId, wordId);
-        return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
