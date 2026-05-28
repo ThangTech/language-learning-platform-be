@@ -9,7 +9,7 @@ namespace LanguagePlatform.API.Controllers;
 [ApiController]
 [Route("api/stats")]
 [Authorize]
-public class StatsController : ControllerBase
+public class StatsController : ApiControllerBase
 {
     private readonly IProgressService _progressService;
 
@@ -24,14 +24,7 @@ public class StatsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _progressService.GetStatsAsync(userId);
-        return Ok(result);
-    }
-
-    // Lấy ID của người dùng đang đăng nhập từ JWT token
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
 
@@ -39,7 +32,7 @@ public class StatsController : ControllerBase
 [ApiController]
 [Route("api/streaks")]
 [Authorize]
-public class StreaksController : ControllerBase
+public class StreaksController : ApiControllerBase
 {
     private readonly IProgressService _progressService;
 
@@ -54,7 +47,7 @@ public class StreaksController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _progressService.GetStreakAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Cập nhật streak khi người dùng học xong trong ngày
@@ -63,20 +56,14 @@ public class StreaksController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _progressService.UpdateStreakAsync(userId);
-        return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
 
 // Controller bảng xếp hạng - ai học nhiều nhất
 [ApiController]
 [Route("api/leaderboard")]
-public class LeaderboardController : ControllerBase
+public class LeaderboardController : ApiControllerBase
 {
     private readonly IProgressService _progressService;
 
@@ -90,6 +77,6 @@ public class LeaderboardController : ControllerBase
     public async Task<IActionResult> GetLeaderboard([FromQuery] int top = 10)
     {
         var result = await _progressService.GetLeaderboardAsync(top);
-        return Ok(result);
+        return HandleResult(result);
     }
 }
