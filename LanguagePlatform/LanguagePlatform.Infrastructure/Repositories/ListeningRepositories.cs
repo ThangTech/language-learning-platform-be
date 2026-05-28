@@ -12,7 +12,11 @@ public class ListeningRepository : GenericRepository<ListeningLesson>, IListenin
     public async Task<(IEnumerable<ListeningLesson> Items, int TotalCount)> GetLessonsPagedAsync(
         int page, int pageSize, string? level = null, string? search = null)
     {
-        var query = _dbSet.AsQueryable();
+        var query = _dbSet
+            .Include(l => l.Quizzes)
+            .Include(l => l.DictationSets)
+            .AsQueryable();
+
         if (!string.IsNullOrWhiteSpace(level))
             query = query.Where(l => l.Level == level);
         if (!string.IsNullOrWhiteSpace(search))
@@ -26,6 +30,12 @@ public class ListeningRepository : GenericRepository<ListeningLesson>, IListenin
             .ToListAsync();
         return (items, total);
     }
+
+    public new async Task<ListeningLesson?> GetByIdAsync(Guid id)
+        => await _dbSet
+            .Include(l => l.Quizzes)
+            .Include(l => l.DictationSets)
+            .FirstOrDefaultAsync(l => l.Id == id);
 }
 
 public class ListeningResultRepository : GenericRepository<ListeningResult>, IListeningResultRepository
