@@ -10,7 +10,7 @@ namespace LanguagePlatform.API.Controllers;
 [ApiController]
 [Route("api/notifications")]
 [Authorize]
-public class NotificationsController : ControllerBase
+public class NotificationsController : ApiControllerBase
 {
     private readonly INotificationService _notifService;
 
@@ -25,7 +25,7 @@ public class NotificationsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _notifService.GetUserNotificationsAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Tạo thông báo mới - chỉ Admin được phép
@@ -34,7 +34,7 @@ public class NotificationsController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateNotificationRequest request)
     {
         var result = await _notifService.CreateNotificationAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Đánh dấu một thông báo là đã đọc
@@ -43,7 +43,7 @@ public class NotificationsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _notifService.MarkAsReadAsync(userId, id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Đánh dấu tất cả thông báo là đã đọc
@@ -52,7 +52,7 @@ public class NotificationsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _notifService.MarkAllAsReadAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     // Xóa một thông báo
@@ -61,13 +61,6 @@ public class NotificationsController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _notifService.DeleteNotificationAsync(userId, id);
-        return Ok(result);
-    }
-
-    // Lấy ID của người dùng đang đăng nhập từ JWT token
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
