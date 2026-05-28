@@ -10,7 +10,7 @@ namespace LanguagePlatform.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController : ApiControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IValidator<LoginRequest> _loginValidator;
@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
 
         // Bước 2: Gọi service xử lý đăng nhập
         var result = await _authService.LoginAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpPost("register")]
@@ -64,7 +64,7 @@ public class AuthController : ControllerBase
         }
 
         var result = await _authService.RegisterAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize]
@@ -73,7 +73,7 @@ public class AuthController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _authService.GetProfileAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize]
@@ -90,7 +90,7 @@ public class AuthController : ControllerBase
 
         Guid userId = GetUserId();
         var result = await _authService.UpdateProfileAsync(userId, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize]
@@ -107,12 +107,6 @@ public class AuthController : ControllerBase
 
         Guid userId = GetUserId();
         var result = await _authService.ChangePasswordAsync(userId, request);
-        return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
