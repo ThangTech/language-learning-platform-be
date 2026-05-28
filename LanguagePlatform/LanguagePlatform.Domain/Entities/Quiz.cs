@@ -20,4 +20,5 @@ public class Quiz : BaseEntity
     // Navigation
     public ListeningLesson? Lesson { get; set; }
     public ICollection<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();
+    public ICollection<QuizResult> Results { get; set; } = new List<QuizResult>();
 }
