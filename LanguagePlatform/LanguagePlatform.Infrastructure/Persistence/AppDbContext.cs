@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<DictationSentence> DictationSentences => Set<DictationSentence>();
     public DbSet<Quiz> Quizzes => Set<Quiz>();
     public DbSet<QuizQuestion> QuizQuestions => Set<QuizQuestion>();
+    public DbSet<QuizResult> QuizResults => Set<QuizResult>();
     public DbSet<UserProgress> UserProgresses => Set<UserProgress>();
     public DbSet<Notification> Notifications => Set<Notification>();
 
@@ -112,6 +113,14 @@ public class AppDbContext : DbContext
             e.HasKey(x => x.Id);
             e.HasMany(x => x.Questions).WithOne(q => q.Quiz).HasForeignKey(q => q.QuizId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Lesson).WithMany(l => l.Quizzes).HasForeignKey(x => x.LessonId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // QuizResult
+        modelBuilder.Entity<QuizResult>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Quiz).WithMany(q => q.Results).HasForeignKey(x => x.QuizId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // QuizQuestion
