@@ -131,11 +131,19 @@ public class ListeningService : IListeningService
         Guid userId,
         SubmitListeningResultRequest request)
     {
+        var lesson = await _lessonRepo.GetByIdAsync(request.LessonId);
+        if (lesson == null)
+        {
+            return ApiResponse<ListeningResultDto>.Fail("Không tìm thấy bài nghe tương ứng.");
+        }
+
         var result = new ListeningResult
         {
             UserId = userId,
             LessonId = request.LessonId,
             Score = request.Score,
+            TimeTaken = request.TimeTaken,
+            ListenCount = request.ListenCount,
             CompletedAt = DateTime.UtcNow
         };
 
@@ -199,6 +207,7 @@ public class ListeningService : IListeningService
 
         var set = new DictationSet
         {
+            LessonId = request.LessonId,
             Title = request.Title,
             Description = request.Description,
             Level = request.Level,
