@@ -10,7 +10,7 @@ namespace LanguagePlatform.API.Controllers;
 
 [ApiController]
 [Route("api/grammar")]
-public class GrammarController : ControllerBase
+public class GrammarController : ApiControllerBase
 {
     private readonly IGrammarService _grammarService;
     private readonly IValidator<CreateGrammarTopicRequest> _createValidator;
@@ -34,14 +34,14 @@ public class GrammarController : ControllerBase
         [FromQuery] string? search = null)
     {
         var result = await _grammarService.GetTopicsAsync(page, pageSize, level, search);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _grammarService.GetTopicByIdAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -57,7 +57,7 @@ public class GrammarController : ControllerBase
         }
 
         var result = await _grammarService.CreateTopicAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -73,7 +73,7 @@ public class GrammarController : ControllerBase
         }
 
         var result = await _grammarService.UpdateTopicAsync(id, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -81,14 +81,14 @@ public class GrammarController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _grammarService.DeleteTopicAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 }
 
 [ApiController]
 [Route("api/user-grammar")]
 [Authorize]
-public class UserGrammarController : ControllerBase
+public class UserGrammarController : ApiControllerBase
 {
     private readonly IGrammarService _grammarService;
 
@@ -102,7 +102,7 @@ public class UserGrammarController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _grammarService.GetUserGrammarProgressAsync(userId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpPost("{topicId:guid}/complete")]
@@ -110,12 +110,6 @@ public class UserGrammarController : ControllerBase
     {
         Guid userId = GetUserId();
         var result = await _grammarService.MarkTopicCompletedAsync(userId, topicId);
-        return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        return HandleResult(result);
     }
 }
