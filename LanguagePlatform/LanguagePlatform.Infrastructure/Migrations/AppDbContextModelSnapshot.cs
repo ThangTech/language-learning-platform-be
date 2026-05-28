@@ -389,6 +389,42 @@ namespace LanguagePlatform.Infrastructure.Migrations
                     b.ToTable("QuizQuestions");
                 });
 
+            modelBuilder.Entity("LanguagePlatform.Domain.Entities.QuizResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("QuizId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("QuizResults");
+                });
+
             modelBuilder.Entity("LanguagePlatform.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -666,6 +702,25 @@ namespace LanguagePlatform.Infrastructure.Migrations
                     b.Navigation("Quiz");
                 });
 
+            modelBuilder.Entity("LanguagePlatform.Domain.Entities.QuizResult", b =>
+                {
+                    b.HasOne("LanguagePlatform.Domain.Entities.Quiz", "Quiz")
+                        .WithMany("Results")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguagePlatform.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LanguagePlatform.Domain.Entities.UserGrammar", b =>
                 {
                     b.HasOne("LanguagePlatform.Domain.Entities.GrammarTopic", "Topic")
@@ -718,6 +773,8 @@ namespace LanguagePlatform.Infrastructure.Migrations
             modelBuilder.Entity("LanguagePlatform.Domain.Entities.Quiz", b =>
                 {
                     b.Navigation("Questions");
+
+                    b.Navigation("Results");
                 });
 
             modelBuilder.Entity("LanguagePlatform.Domain.Entities.User", b =>
