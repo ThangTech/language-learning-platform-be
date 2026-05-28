@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IListeningResultRepository, ListeningResultRepository>();
         services.AddScoped<IDictationSetRepository, DictationSetRepository>();
         services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<IQuizResultRepository, QuizResultRepository>();
         services.AddScoped<IProgressRepository, ProgressRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
 
