@@ -10,16 +10,22 @@ namespace LanguagePlatform.API.Controllers;
 
 [ApiController]
 [Route("api/quizzes")]
-public class QuizzesController : ControllerBase
+public class QuizzesController : ApiControllerBase
 {
     private readonly IQuizService _quizService;
+    private readonly IValidator<CreateQuizRequest> _createQuizValidator;
+    private readonly IValidator<UpdateQuizRequest> _updateQuizValidator;
     private readonly IValidator<SubmitQuizRequest> _submitValidator;
 
     public QuizzesController(
         IQuizService quizService,
+        IValidator<CreateQuizRequest> createQuizValidator,
+        IValidator<UpdateQuizRequest> updateQuizValidator,
         IValidator<SubmitQuizRequest> submitValidator)
     {
         _quizService = quizService;
+        _createQuizValidator = createQuizValidator;
+        _updateQuizValidator = updateQuizValidator;
         _submitValidator = submitValidator;
     }
 
@@ -27,37 +33,53 @@ public class QuizzesController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _quizService.GetQuizzesAsync();
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _quizService.GetQuizByIdAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [HttpGet("by-lesson/{lessonId:guid}")]
     public async Task<IActionResult> GetByLesson(Guid lessonId)
     {
         var result = await _quizService.GetQuizzesByLessonAsync(lessonId);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateQuizRequest request)
     {
+        var validationResult = await _createQuizValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
+        }
+
         var result = await _quizService.CreateQuizAsync(request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateQuizRequest request)
     {
+        var validationResult = await _updateQuizValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var errorResponse = ApiErrorResponse.Fail(errors[0], errors);
+            return BadRequest(errorResponse);
+        }
+
         var result = await _quizService.UpdateQuizAsync(id, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -65,7 +87,7 @@ public class QuizzesController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _quizService.DeleteQuizAsync(id);
-        return Ok(result);
+        return HandleResult(result);
     }
 
     [Authorize]
@@ -83,12 +105,15 @@ public class QuizzesController : ControllerBase
 
         Guid userId = GetUserId();
         var result = await _quizService.SubmitQuizAsync(userId, request);
-        return Ok(result);
+        return HandleResult(result);
     }
 
-    private Guid GetUserId()
+    [Authorize]
+    [HttpGet("my-results")]
+    public async Task<IActionResult> GetMyResults()
     {
-        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.Parse(userId!);
+        Guid userId = GetUserId();
+        var result = await _quizService.GetMyResultsAsync(userId);
+        return HandleResult(result);
     }
 }
