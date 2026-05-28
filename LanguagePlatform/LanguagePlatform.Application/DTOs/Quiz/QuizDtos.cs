@@ -120,3 +120,20 @@ public class QuizAnswerResultDto
 
     public string? Explanation { get; set; }
 }
+
+public class QuizHistoryDto
+{
+    public Guid Id { get; set; }
+
+    public Guid QuizId { get; set; }
+
+    public string QuizTitle { get; set; } = string.Empty;
+
+    public int Score { get; set; }
+
+    public int TotalQuestions { get; set; }
+
+    public int CorrectAnswers { get; set; }
+
+    public DateTime CompletedAt { get; set; }
+}
