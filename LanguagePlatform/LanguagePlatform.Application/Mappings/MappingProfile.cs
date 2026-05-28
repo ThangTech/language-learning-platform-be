@@ -52,7 +52,10 @@ public class MappingProfile : Profile
         CreateMap<UserGrammar, UserGrammarDto>();
 
         // Listening
-        CreateMap<ListeningLesson, ListeningLessonDto>();
+        CreateMap<ListeningLesson, ListeningLessonDto>()
+            .ForMember(
+                d => d.TotalExercises,
+                o => o.MapFrom(s => s.Quizzes.Count + s.DictationSets.Count));
         CreateMap<CreateListeningLessonRequest, ListeningLesson>()
             .ForMember(d => d.Id, o => o.Ignore())
             .ForMember(d => d.CreatedAt, o => o.Ignore())
@@ -100,9 +103,6 @@ public class MappingProfile : Profile
             .ForMember(d => d.CurrentStreak, o => o.MapFrom(s => s.CurrentStreak))
             .ForMember(d => d.LongestStreak, o => o.MapFrom(s => s.LongestStreak))
             .ForMember(d => d.LastActivityDate, o => o.MapFrom(s => s.LastActivityDate));
-        CreateMap<UserProgress, LeaderboardEntryDto>()
-            .ForMember(d => d.FullName, o => o.MapFrom(s => s.User != null ? s.User.FullName : string.Empty))
-            .ForMember(d => d.AvatarUrl, o => o.MapFrom(s => s.User != null ? s.User.AvatarUrl : null));
 
         // Notification
         CreateMap<Notification, NotificationDto>()
