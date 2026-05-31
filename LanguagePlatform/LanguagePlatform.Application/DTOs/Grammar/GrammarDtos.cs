@@ -19,6 +19,7 @@ public class GrammarTopicDto
     public string LevelColor => GetLevelColor();
 
     public DateTime CreatedAt { get; set; }
+    public string? YouTubeUrl { get; set; }
 
     private string GetLevelColor()
     {
@@ -39,6 +40,7 @@ public class CreateGrammarTopicRequest
     public string? Explanation { get; set; }
     public string? Examples { get; set; }
     public string Level { get; set; } = "Beginner";
+    public string? YouTubeUrl { get; set; }
 }
 
 public class UpdateGrammarTopicRequest
@@ -48,6 +50,7 @@ public class UpdateGrammarTopicRequest
     public string? Explanation { get; set; }
     public string? Examples { get; set; }
     public string Level { get; set; } = string.Empty;
+    public string? YouTubeUrl { get; set; }
 }
 
 public class UserGrammarDto
