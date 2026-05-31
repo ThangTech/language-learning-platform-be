@@ -9,6 +9,9 @@ public class QuizRepository : GenericRepository<Quiz>, IQuizRepository
 {
     public QuizRepository(AppDbContext context) : base(context) { }
 
+    public async Task<IEnumerable<Quiz>> GetAllWithQuestionsAsync()
+        => await _dbSet.Include(q => q.Questions).ToListAsync();
+
     public async Task<Quiz?> GetWithQuestionsAsync(Guid id)
         => await _dbSet.Include(q => q.Questions).FirstOrDefaultAsync(q => q.Id == id);
 

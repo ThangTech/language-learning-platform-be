@@ -29,7 +29,7 @@ public class QuizService : IQuizService
 
     public async Task<ApiResponse<IEnumerable<QuizDto>>> GetQuizzesAsync()
     {
-        var quizzes = await _quizRepo.GetAllAsync();
+        var quizzes = await _quizRepo.GetAllWithQuestionsAsync();
         var quizDtos = _mapper.Map<List<QuizDto>>(quizzes);
 
         return ApiResponse<IEnumerable<QuizDto>>.Ok(quizDtos);
