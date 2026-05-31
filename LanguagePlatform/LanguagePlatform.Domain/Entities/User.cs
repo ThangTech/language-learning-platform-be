@@ -11,10 +11,9 @@ public class User : AuditableEntity
     public UserRole Role { get; set; } = UserRole.User;
     public UserStatus Status { get; set; } = UserStatus.Active;
     public string? AvatarUrl { get; set; }
-    // Trình độ của người học: Beginner, Intermediate, Advanced
     public string Level { get; set; } = "Beginner";
+    public string? Bio { get; set; }
 
-    // Navigation
     public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
     public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
     public ICollection<UserGrammar> UserGrammars { get; set; } = new List<UserGrammar>();

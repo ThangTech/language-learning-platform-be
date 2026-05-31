@@ -11,7 +11,6 @@ public class RegisterRequest
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
-    // Trình độ người học: Beginner / Intermediate / Advanced
     public string Level { get; set; } = "Beginner";
 }
 
@@ -26,6 +25,7 @@ public class UpdateProfileRequest
     public string FullName { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
     public string? Level { get; set; }
+    public string? Bio { get; set; }
 }
 
 public class ChangePasswordRequest

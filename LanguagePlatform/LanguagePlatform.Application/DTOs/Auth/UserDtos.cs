@@ -16,6 +16,8 @@ public class UserDto
 
     public string Level { get; set; } = "Beginner";
 
+    public string? Bio { get; set; }
+
     public string Role { get; set; } = string.Empty;
 
     public string RoleLabel => GetRoleLabel();

@@ -81,6 +81,8 @@ public class AuthService : IAuthService
             user.AvatarUrl = request.AvatarUrl;
         if (!string.IsNullOrWhiteSpace(request.Level))
             user.Level = request.Level;
+        if (request.Bio != null)
+            user.Bio = request.Bio;
         user.UpdatedAt = DateTime.UtcNow;
 
         _userRepo.Update(user);
