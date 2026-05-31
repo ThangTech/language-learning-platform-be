@@ -132,4 +132,5 @@ public class FlashcardDto
     public bool IsLearned { get; set; }
     public int ReviewCount { get; set; }
     public DateTime? NextReviewAt { get; set; }
+    public DateTime? LearnedAt { get; set; }
 }
