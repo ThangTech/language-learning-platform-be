@@ -14,6 +14,8 @@ public class UserDto
 
     public string? AvatarUrl { get; set; }
 
+    public string Level { get; set; } = "Beginner";
+
     public string Role { get; set; } = string.Empty;
 
     public string RoleLabel => GetRoleLabel();
