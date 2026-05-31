@@ -49,7 +49,8 @@ public class AuthService : IAuthService
             FullName = request.FullName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
             Role = UserRole.User,
-            Status = UserStatus.Active
+            Status = UserStatus.Active,
+            Level = request.Level
         };
 
         await _userRepo.AddAsync(user);
@@ -78,6 +79,8 @@ public class AuthService : IAuthService
         user.FullName = request.FullName;
         if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
             user.AvatarUrl = request.AvatarUrl;
+        if (!string.IsNullOrWhiteSpace(request.Level))
+            user.Level = request.Level;
         user.UpdatedAt = DateTime.UtcNow;
 
         _userRepo.Update(user);
