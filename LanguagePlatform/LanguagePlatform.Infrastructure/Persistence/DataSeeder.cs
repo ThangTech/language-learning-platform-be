@@ -46,16 +46,27 @@ public static class DataSeeder
 
     private static async Task SeedSampleWordsAsync(AppDbContext db)
     {
+        var hasEnglishWord = await db.Words.AnyAsync(w => w.Term == "ability" && w.Definition.Contains("physical"));
+        if (hasEnglishWord)
+        {
+            db.Words.RemoveRange(db.Words);
+            await db.SaveChangesAsync();
+        }
+
         if (await db.Words.AnyAsync())
             return;
 
         var words = new List<Word>
         {
-            new() { Id = Guid.NewGuid(), Term = "abandon", Definition = "to leave completely and finally", ExampleSentence = "She had to abandon her car in the snow.", Level = WordLevel.Intermediate, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new() { Id = Guid.NewGuid(), Term = "ability", Definition = "the physical or mental power or skill needed to do something", ExampleSentence = "She has the ability to solve complex problems.", Level = WordLevel.Beginner, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new() { Id = Guid.NewGuid(), Term = "abolish", Definition = "to officially end a law, system, or institution", ExampleSentence = "Slavery was abolished in the US in 1865.", Level = WordLevel.Advanced, Topic = "History", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new() { Id = Guid.NewGuid(), Term = "abstract", Definition = "existing as an idea, feeling, or quality, not as a material object", ExampleSentence = "Love is an abstract concept.", Level = WordLevel.Intermediate, Topic = "Academic", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new() { Id = Guid.NewGuid(), Term = "accelerate", Definition = "to move faster or make something happen faster", ExampleSentence = "The car accelerated down the highway.", Level = WordLevel.Intermediate, Topic = "Science", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "abandon", Definition = "từ bỏ, ruồng bỏ, bỏ rơi", ExampleSentence = "She had to abandon her car in the snow.", Level = WordLevel.Intermediate, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "ability", Definition = "khả năng, năng lực", ExampleSentence = "She has the ability to solve complex problems.", Level = WordLevel.Beginner, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "abolish", Definition = "bãi bỏ, thủ tiêu, hủy bỏ", ExampleSentence = "Slavery was abolished in the US in 1865.", Level = WordLevel.Advanced, Topic = "History", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "abstract", Definition = "trừu tượng", ExampleSentence = "Love is an abstract concept.", Level = WordLevel.Intermediate, Topic = "Academic", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "accelerate", Definition = "tăng tốc, làm nhanh hơn", ExampleSentence = "The car accelerated down the highway.", Level = WordLevel.Intermediate, Topic = "Science", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "accuse", Definition = "buộc tội, kết tội", ExampleSentence = "He was accused of stealing the money.", Level = WordLevel.Beginner, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "achieve", Definition = "đạt được, giành được", ExampleSentence = "You can achieve anything with hard work.", Level = WordLevel.Beginner, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "adjust", Definition = "điều chỉnh, dàn xếp", ExampleSentence = "It took her a while to adjust to the new environment.", Level = WordLevel.Beginner, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), Term = "affect", Definition = "ảnh hưởng, tác động đến", ExampleSentence = "The weather affects our mood.", Level = WordLevel.Beginner, Topic = "General", ImageUrl = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
         };
 
         db.Words.AddRange(words);
