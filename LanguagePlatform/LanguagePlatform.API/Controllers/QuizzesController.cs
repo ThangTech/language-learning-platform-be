@@ -50,6 +50,13 @@ public class QuizzesController : ApiControllerBase
         return HandleResult(result);
     }
 
+    [HttpGet("by-grammar/{grammarTopicId:guid}")]
+    public async Task<IActionResult> GetByGrammar(Guid grammarTopicId)
+    {
+        var result = await _quizService.GetQuizzesByGrammarTopicAsync(grammarTopicId);
+        return HandleResult(result);
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateQuizRequest request)
