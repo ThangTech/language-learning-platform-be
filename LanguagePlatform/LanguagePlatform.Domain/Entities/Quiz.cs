@@ -10,6 +10,8 @@ public class Quiz : BaseEntity
     /// <summary>Optional FK to ListeningLesson. null = standalone quiz.</summary>
     public Guid? LessonId { get; set; }
 
+    public Guid? GrammarTopicId { get; set; }
+
     public QuizDifficulty Difficulty { get; set; } = QuizDifficulty.Medium;
 
     public QuizType Type { get; set; } = QuizType.MultipleChoice;
@@ -19,6 +21,7 @@ public class Quiz : BaseEntity
 
     // Navigation
     public ListeningLesson? Lesson { get; set; }
+    public GrammarTopic? GrammarTopic { get; set; }
     public ICollection<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();
     public ICollection<QuizResult> Results { get; set; } = new List<QuizResult>();
 }

@@ -7,6 +7,10 @@ namespace LanguagePlatform.Infrastructure.Persistence;
 
 public static class DataSeeder
 {
+    private static readonly Guid SimplePresentId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private static readonly Guid PresentContinuousId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+    private static readonly Guid ConditionalType1Id = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
     public static async Task SeedAsync(AppDbContext db)
     {
         // Chạy pending migrations trước
@@ -77,14 +81,51 @@ public static class DataSeeder
 
     private static async Task SeedSampleGrammarAsync(AppDbContext db)
     {
+        var hasYouTube = await db.GrammarTopics.AnyAsync(t => t.YouTubeUrl != null);
+        if (!hasYouTube && await db.GrammarTopics.AnyAsync())
+        {
+            db.GrammarTopics.RemoveRange(db.GrammarTopics);
+            await db.SaveChangesAsync();
+        }
+
         if (await db.GrammarTopics.AnyAsync())
             return;
 
         var topics = new List<GrammarTopic>
         {
-            new() { Id = Guid.NewGuid(), Title = "Simple Present Tense", Content = "The simple present tense is used to describe habits, unchanging situations, general truths, and fixed arrangements.\n\n**Structure:**\n- I/You/We/They + base verb\n- He/She/It + base verb + s/es\n\n**Examples:**\n- I eat breakfast every morning.\n- She works at a hospital.\n- The sun rises in the east.", Level = GrammarLevel.Beginner, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new() { Id = Guid.NewGuid(), Title = "Present Continuous Tense", Content = "The present continuous tense is used to describe actions happening right now or around the time of speaking.\n\n**Structure:**\n- Subject + am/is/are + verb-ing\n\n**Examples:**\n- I am studying English now.\n- They are playing football.\n- She is working from home today.", Level = GrammarLevel.Beginner, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new() { Id = Guid.NewGuid(), Title = "Conditional Sentences Type 1", Content = "Type 1 conditionals express real or possible situations in the present or future.\n\n**Structure:**\n- If + Simple Present, will + base verb\n\n**Examples:**\n- If it rains, I will stay home.\n- If you study hard, you will pass the exam.\n- If she calls, tell her I'm busy.", Level = GrammarLevel.Intermediate, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new() {
+                Id = SimplePresentId,
+                Title = "Simple Present Tense",
+                Content = "The simple present tense is used to describe habits, unchanging situations, general truths, and fixed arrangements.\n\n**Structure:**\n- I/You/We/They + base verb\n- He/She/It + base verb + s/es\n\n**Examples:**\n- I eat breakfast every morning.\n- She works at a hospital.\n- The sun rises in the east.",
+                Explanation = "Thì hiện tại đơn diễn tả một hành động lặp đi lặp lại theo thói quen, một sự thật hiển nhiên hoặc một lịch trình cố định.",
+                Examples = "- My father goes to work at 7 AM daily.\n- Water boils at 100 degrees Celsius.\n- The train leaves at 8:00 PM.",
+                Level = GrammarLevel.Beginner,
+                YouTubeUrl = "https://www.youtube.com/watch?v=L9AJuOC_19Y",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new() {
+                Id = PresentContinuousId,
+                Title = "Present Continuous Tense",
+                Content = "The present continuous tense is used to describe actions happening right now or around the time of speaking.\n\n**Structure:**\n- Subject + am/is/are + verb-ing\n\n**Examples:**\n- I am studying English now.\n- They are playing football.\n- She is working from home today.",
+                Explanation = "Thì hiện tại tiếp diễn được sử dụng để diễn tả một hành động đang xảy ra ngay tại thời điểm nói hoặc xung quanh thời điểm nói.",
+                Examples = "- Look! It is snowing outside.\n- The children are making a snowman.\n- What are you doing at the moment?",
+                Level = GrammarLevel.Beginner,
+                YouTubeUrl = "https://www.youtube.com/watch?v=0k5Gki6pZ3Q",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new() {
+                Id = ConditionalType1Id,
+                Title = "Conditional Sentences Type 1",
+                Content = "Type 1 conditionals express real or possible situations in the present or future.\n\n**Structure:**\n- If + Simple Present, will + base verb\n\n**Examples:**\n- If it rains, I will stay home.\n- If you study hard, you will pass the exam.\n- If she calls, tell her I'm busy.",
+                Explanation = "Câu điều kiện loại 1 dùng để diễn tả một sự việc có thể xảy ra ở hiện tại hoặc tương lai nếu có một điều kiện nhất định xảy ra trước.",
+                Examples = "- If you don't hurry, you will miss the train.\n- If she gets the job, she will move to Hanoi.\n- If they invite us, we will come.",
+                Level = GrammarLevel.Intermediate,
+                YouTubeUrl = "https://www.youtube.com/watch?v=rUj7K9lAEvc",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
         };
 
         db.GrammarTopics.AddRange(topics);
@@ -208,13 +249,11 @@ public static class DataSeeder
         await db.SaveChangesAsync();
     }
 
-    // ── Sample Listening Quizzes ────────────────────────────────────────────────
+    // ── Sample Listening & Grammar Quizzes ───────────────────────────────────────
 
     private static async Task SeedSampleQuizzesAsync(AppDbContext db)
     {
-        var lessons = await db.ListeningLessons
-            .ToListAsync();
-
+        var lessons = await db.ListeningLessons.ToListAsync();
         var quizzes = new List<Quiz>();
 
         AddQuizIfMissing(
@@ -319,13 +358,88 @@ public static class DataSeeder
                     "Longer holidays")
             });
 
-        if (quizzes.Count == 0)
+        if (quizzes.Count > 0)
         {
-            return;
+            db.Quizzes.AddRange(quizzes);
+            await db.SaveChangesAsync();
         }
 
-        db.Quizzes.AddRange(quizzes);
-        await db.SaveChangesAsync();
+        // Grammar Quizzes
+        var hasGrammarQuiz = await db.Quizzes.AnyAsync(q => q.GrammarTopicId != null);
+        if (!hasGrammarQuiz)
+        {
+            var grammarQuizzes = new List<Quiz>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Trắc nghiệm Simple Present Tense",
+                    GrammarTopicId = SimplePresentId,
+                    Difficulty = QuizDifficulty.Easy,
+                    Type = QuizType.MultipleChoice,
+                    DurationMinutes = 10,
+                    Questions = new List<QuizQuestion>
+                    {
+                        CreateMultipleChoiceQuestion(
+                            "Choose the correct option: She ______ (go) to school everyday.",
+                            "goes",
+                            "With singular third person pronoun (She/He/It), simple present verbs add 's/es'.",
+                            "go", "goes", "going", "went"),
+                        CreateMultipleChoiceQuestion(
+                            "Choose the correct option: They ______ (play) football on Sundays.",
+                            "play",
+                            "With plural pronouns (They/We/You/I), the simple present uses the base form of the verb.",
+                            "play", "plays", "playing", "played")
+                    }
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Trắc nghiệm Present Continuous Tense",
+                    GrammarTopicId = PresentContinuousId,
+                    Difficulty = QuizDifficulty.Easy,
+                    Type = QuizType.MultipleChoice,
+                    DurationMinutes = 10,
+                    Questions = new List<QuizQuestion>
+                    {
+                        CreateMultipleChoiceQuestion(
+                            "Choose the correct option: I ______ (study) English right now.",
+                            "am studying",
+                            "Present continuous structure: subject + am/is/are + verb-ing. 'I' takes 'am studying'.",
+                            "am studying", "is studying", "are studying", "study"),
+                        CreateMultipleChoiceQuestion(
+                            "Choose the correct option: Listen! The birds ______ (sing) in the tree.",
+                            "are singing",
+                            "The action is happening right now, and 'birds' is plural, so we use 'are singing'.",
+                            "sings", "is singing", "are singing", "sang")
+                    }
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Trắc nghiệm Conditional Sentences Type 1",
+                    GrammarTopicId = ConditionalType1Id,
+                    Difficulty = QuizDifficulty.Medium,
+                    Type = QuizType.MultipleChoice,
+                    DurationMinutes = 15,
+                    Questions = new List<QuizQuestion>
+                    {
+                        CreateMultipleChoiceQuestion(
+                            "Complete the sentence: If it ______ (rain) tomorrow, we will stay at home.",
+                            "rains",
+                            "Conditional Type 1 uses Simple Present in the 'if' clause: 'If it rains...'.",
+                            "rain", "rains", "will rain", "rained"),
+                        CreateMultipleChoiceQuestion(
+                            "Complete the sentence: If you ______ (not study) hard, you won't pass the exam.",
+                            "don't study",
+                            "We use simple present negation for 'you' in the 'if' clause: 'If you don't study...'.",
+                            "don't study", "doesn't study", "won't study", "didn't study")
+                    }
+                }
+            };
+            db.Quizzes.AddRange(grammarQuizzes);
+            await db.SaveChangesAsync();
+        }
     }
 
     private static void AddQuizIfMissing(

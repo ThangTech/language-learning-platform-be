@@ -14,6 +14,9 @@ public class QuizRepository : GenericRepository<Quiz>, IQuizRepository
 
     public async Task<IEnumerable<Quiz>> GetByLessonAsync(Guid lessonId)
         => await _dbSet.Include(q => q.Questions).Where(q => q.LessonId == lessonId).ToListAsync();
+
+    public async Task<IEnumerable<Quiz>> GetByGrammarTopicAsync(Guid grammarTopicId)
+        => await _dbSet.Include(q => q.Questions).Where(q => q.GrammarTopicId == grammarTopicId).ToListAsync();
 }
 
 public class QuizResultRepository : GenericRepository<QuizResult>, IQuizResultRepository

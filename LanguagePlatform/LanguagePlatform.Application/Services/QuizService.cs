@@ -57,6 +57,14 @@ public class QuizService : IQuizService
         return ApiResponse<IEnumerable<QuizDto>>.Ok(quizDtos);
     }
 
+    public async Task<ApiResponse<IEnumerable<QuizDto>>> GetQuizzesByGrammarTopicAsync(Guid grammarTopicId)
+    {
+        var quizzes = await _quizRepo.GetByGrammarTopicAsync(grammarTopicId);
+        var quizDtos = _mapper.Map<List<QuizDto>>(quizzes);
+
+        return ApiResponse<IEnumerable<QuizDto>>.Ok(quizDtos);
+    }
+
     public async Task<ApiResponse<QuizDto>> CreateQuizAsync(CreateQuizRequest request)
     {
         var questions = request.Questions
@@ -75,6 +83,7 @@ public class QuizService : IQuizService
         {
             Title = request.Title,
             LessonId = request.LessonId,
+            GrammarTopicId = request.GrammarTopicId,
             Difficulty = ParseDifficulty(request.Difficulty),
             Type = ParseQuizType(request.Type),
             DurationMinutes = request.DurationMinutes,
@@ -103,6 +112,8 @@ public class QuizService : IQuizService
         }
 
         quiz.Title = request.Title;
+        quiz.LessonId = request.LessonId;
+        quiz.GrammarTopicId = request.GrammarTopicId;
         quiz.Difficulty = ParseDifficulty(request.Difficulty);
         quiz.Type = ParseQuizType(request.Type);
         quiz.DurationMinutes = request.DurationMinutes;

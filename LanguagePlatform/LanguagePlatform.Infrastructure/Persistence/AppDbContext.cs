@@ -113,6 +113,7 @@ public class AppDbContext : DbContext
             e.HasKey(x => x.Id);
             e.HasMany(x => x.Questions).WithOne(q => q.Quiz).HasForeignKey(q => q.QuizId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Lesson).WithMany(l => l.Quizzes).HasForeignKey(x => x.LessonId).OnDelete(DeleteBehavior.SetNull);
+            e.HasOne(x => x.GrammarTopic).WithMany().HasForeignKey(x => x.GrammarTopicId).OnDelete(DeleteBehavior.SetNull);
         });
 
         // QuizResult

@@ -10,6 +10,7 @@ public class GrammarTopic : AuditableEntity
     public string? Explanation { get; set; }
     public string? Examples { get; set; }
     public GrammarLevel Level { get; set; } = GrammarLevel.Beginner;
+    public string? YouTubeUrl { get; set; }
 
     // Navigation
     public ICollection<UserGrammar> UserGrammars { get; set; } = new List<UserGrammar>();

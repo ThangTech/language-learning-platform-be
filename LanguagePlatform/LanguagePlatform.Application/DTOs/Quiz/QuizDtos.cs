@@ -7,6 +7,7 @@ public class QuizDto
     public string Title { get; set; } = string.Empty;
 
     public Guid? LessonId { get; set; }
+    public Guid? GrammarTopicId { get; set; }
 
     public string Difficulty { get; set; } = string.Empty;
 
@@ -48,6 +49,8 @@ public class CreateQuizRequest
 
     public Guid? LessonId { get; set; }
 
+    public Guid? GrammarTopicId { get; set; }
+
     public string Difficulty { get; set; } = "Medium";
 
     public string Type { get; set; } = "MultipleChoice";
@@ -75,6 +78,10 @@ public class CreateQuizQuestionRequest
 public class UpdateQuizRequest
 {
     public string Title { get; set; } = string.Empty;
+
+    public Guid? LessonId { get; set; }
+
+    public Guid? GrammarTopicId { get; set; }
 
     public string Difficulty { get; set; } = "Medium";
 
