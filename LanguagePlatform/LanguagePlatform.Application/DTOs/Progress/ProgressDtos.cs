@@ -51,6 +51,22 @@ public class UserProgressDto
             return GrammarCompleted + ListeningCompleted + QuizzesCompleted;
         }
     }
+
+    public string StreakText
+    {
+        get
+        {
+            return $"{CurrentStreak} ngày";
+        }
+    }
+
+    public bool HasStudiedToday
+    {
+        get
+        {
+            return LastActivityDate?.Date == DateTime.UtcNow.Date;
+        }
+    }
 }
 
 public class LeaderboardEntryDto
@@ -126,6 +142,14 @@ public class StreakDto
         get
         {
             return $"{LongestStreak} ngày";
+        }
+    }
+
+    public string StreakText
+    {
+        get
+        {
+            return $"{CurrentStreak} ngày";
         }
     }
 
