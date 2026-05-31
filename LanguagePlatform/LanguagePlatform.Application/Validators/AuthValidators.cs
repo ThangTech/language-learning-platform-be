@@ -47,7 +47,7 @@ public class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequ
             .MaximumLength(100).WithMessage("Họ và tên không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.AvatarUrl)
-            .Must(url => url == null || Uri.TryCreate(url, UriKind.Absolute, out _))
+            .Must(url => url == null || url.StartsWith("data:") || Uri.TryCreate(url, UriKind.Absolute, out _))
             .WithMessage("Đường dẫn ảnh đại diện không hợp lệ.");
     }
 }
